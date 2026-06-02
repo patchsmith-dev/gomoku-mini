@@ -6,6 +6,8 @@ Gomoku Mini is intentionally small and dependency-free. The project is split int
 
 `src/engine.js` contains board state, move validation, turn switching, win detection, undo, reset, and stone counting.
 
+It also contains the small computer move selector used by local computer mode. The selector is intentionally deterministic and simple: it prefers an immediate winning move, then blocks an immediate opponent win, then chooses an open cell near existing stones.
+
 The engine is written as a tiny universal module:
 
 - In the browser it attaches to `window.GomokuEngine`
@@ -19,6 +21,7 @@ This keeps the core rules testable without adding a bundler.
 
 - Renders the 15 x 15 board
 - Handles clicks
+- Handles player names and local computer mode
 - Updates move history and counts
 - Shows win and draw state
 - Enables undo and reset controls

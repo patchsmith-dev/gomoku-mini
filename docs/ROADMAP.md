@@ -2,13 +2,12 @@
 
 ## Near Term
 
-- Add optional player names
 - Add high-contrast theme checks
 - Add visible focus testing to the CI checklist
+- Improve the computer opponent with selectable difficulty
 
 ## Later
 
-- Add computer opponent mode
 - Add timer mode
 - Add online multiplayer prototype
 - Add theme customization

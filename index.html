@@ -33,6 +33,29 @@
           </div>
 
           <aside class="side-panel" aria-label="Game status">
+            <div class="setup-panel" aria-label="Game setup">
+              <div class="mode-row">
+                <span class="label">Mode</span>
+                <div class="segmented-control" role="radiogroup" aria-label="Game mode">
+                  <label>
+                    <input type="radio" name="game-mode" value="two-player" checked />
+                    <span>Two Player</span>
+                  </label>
+                  <label>
+                    <input type="radio" name="game-mode" value="computer" />
+                    <span>Computer</span>
+                  </label>
+                </div>
+              </div>
+              <label class="name-field">
+                <span class="label">Black</span>
+                <input id="black-name-input" type="text" maxlength="24" placeholder="Black" autocomplete="off" />
+              </label>
+              <label class="name-field">
+                <span class="label">White</span>
+                <input id="white-name-input" type="text" maxlength="24" placeholder="White" autocomplete="off" />
+              </label>
+            </div>
             <div class="status-block">
               <span class="label">Turn</span>
               <strong id="turn-label">Black</strong>
@@ -45,12 +68,12 @@
             <div class="score-grid">
               <div>
                 <span class="stone-sample black"></span>
-                <span>Black</span>
+                <span id="black-score-name">Black</span>
                 <strong id="black-count">0</strong>
               </div>
               <div>
                 <span class="stone-sample white"></span>
-                <span>White</span>
+                <span id="white-score-name">White</span>
                 <strong id="white-count">0</strong>
               </div>
             </div>

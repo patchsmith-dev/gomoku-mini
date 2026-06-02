@@ -100,6 +100,84 @@
     };
   }
 
+  function chooseComputerMove(game, player = "white") {
+    if (game.winner || game.isDraw) {
+      return null;
+    }
+
+    const winningMove = findImmediateMove(game, player);
+    if (winningMove) {
+      return winningMove;
+    }
+
+    const blockingMove = findImmediateMove(game, nextPlayer(player));
+    if (blockingMove) {
+      return blockingMove;
+    }
+
+    return chooseNearbyMove(game);
+  }
+
+  function findImmediateMove(game, player) {
+    for (const [row, col] of getOpenCells(game)) {
+      game.board[row][col] = player;
+      const isWinningMove = findWinningLine(game.board, row, col, player).length >= 5;
+      game.board[row][col] = null;
+
+      if (isWinningMove) {
+        return { row, col };
+      }
+    }
+
+    return null;
+  }
+
+  function chooseNearbyMove(game) {
+    const openCells = getOpenCells(game);
+
+    if (openCells.length === 0) {
+      return null;
+    }
+
+    const occupiedCells = game.moves.map((move) => [move.row, move.col]);
+    const candidates = occupiedCells.length
+      ? openCells.filter(([row, col]) =>
+          occupiedCells.some(([occupiedRow, occupiedCol]) => {
+            const rowDistance = Math.abs(row - occupiedRow);
+            const colDistance = Math.abs(col - occupiedCol);
+
+            return Math.max(rowDistance, colDistance) === 1;
+          }),
+        )
+      : openCells;
+    const rankedCandidates = candidates.length ? candidates : openCells;
+    const center = (game.size - 1) / 2;
+
+    rankedCandidates.sort(([rowA, colA], [rowB, colB]) => {
+      const distanceA = (rowA - center) ** 2 + (colA - center) ** 2;
+      const distanceB = (rowB - center) ** 2 + (colB - center) ** 2;
+
+      return distanceA - distanceB || rowA - rowB || colA - colB;
+    });
+
+    const [row, col] = rankedCandidates[0];
+    return { row, col };
+  }
+
+  function getOpenCells(game) {
+    const cells = [];
+
+    for (let row = 0; row < game.size; row += 1) {
+      for (let col = 0; col < game.size; col += 1) {
+        if (!game.board[row][col]) {
+          cells.push([row, col]);
+        }
+      }
+    }
+
+    return cells;
+  }
+
   function findWinningLine(board, row, col, player) {
     for (const [rowStep, colStep] of DIRECTIONS) {
       const line = [
@@ -148,6 +226,10 @@
     undoMove,
     resetGame,
     countStones,
+    chooseComputerMove,
+    findImmediateMove,
+    chooseNearbyMove,
+    getOpenCells,
     findWinningLine,
     isInsideBoard,
     nextPlayer,

@@ -10,6 +10,8 @@ Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in 
 
 - 15 x 15 classic Gomoku board
 - Local two-player mode
+- Optional local computer opponent mode
+- Custom player names
 - Black and white turn tracking
 - Five-in-a-row win detection
 - Undo and reset controls
@@ -85,6 +87,8 @@ npm run check
 ## How To Play
 
 Black moves first. Players take turns placing stones on empty intersections. The first player to connect five or more stones horizontally, vertically, or diagonally wins.
+
+Use the mode control to switch between local two-player play and a simple local computer opponent. The computer currently plays white and uses a small heuristic: win when possible, block an immediate threat, then choose a nearby open cell.
 
 Keyboard controls:
 

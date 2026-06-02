@@ -1,8 +1,13 @@
-const { BOARD_SIZE, PLAYERS, createGame, placeStone, undoMove, resetGame, countStones } = window.GomokuEngine;
+const { BOARD_SIZE, PLAYERS, chooseComputerMove, createGame, placeStone, undoMove, resetGame, countStones } = window.GomokuEngine;
 
 const boardElement = document.querySelector("#board");
 const turnLabel = document.querySelector("#turn-label");
 const resultLabel = document.querySelector("#result-label");
+const blackNameInput = document.querySelector("#black-name-input");
+const whiteNameInput = document.querySelector("#white-name-input");
+const gameModeInputs = document.querySelectorAll('input[name="game-mode"]');
+const blackScoreName = document.querySelector("#black-score-name");
+const whiteScoreName = document.querySelector("#white-score-name");
 const blackCount = document.querySelector("#black-count");
 const whiteCount = document.querySelector("#white-count");
 const moveCount = document.querySelector("#move-count");
@@ -14,8 +19,10 @@ const clearRecentButton = document.querySelector("#clear-recent-button");
 const undoButton = document.querySelector("#undo-button");
 const resetButton = document.querySelector("#reset-button");
 const MATCH_STORAGE_KEY = "gomoku-mini:recent-match";
+const COMPUTER_PLAYER = "white";
 
 let game = createGame();
+let gameMode = "two-player";
 let focusPosition = { row: 0, col: 0 };
 let lastAnnouncement = "";
 
@@ -45,13 +52,15 @@ function renderBoard() {
 
 function getCellLabel(row, col, value) {
   const position = `row ${row + 1}, column ${col + 1}`;
-  return value ? `${PLAYERS[value]} stone at ${position}` : `Empty cell at ${position}`;
+  return value ? `${getPlayerName(value)} stone at ${position}` : `Empty cell at ${position}`;
 }
 
 function renderStatus() {
   const stoneCounts = countStones(game);
 
-  turnLabel.textContent = PLAYERS[game.currentPlayer];
+  blackScoreName.textContent = getPlayerName("black");
+  whiteScoreName.textContent = getPlayerName("white");
+  turnLabel.textContent = getPlayerName(game.currentPlayer);
   resultLabel.textContent = getResultLabel();
   resultLabel.style.color = game.winner ? "var(--danger)" : "inherit";
   blackCount.textContent = String(stoneCounts.black);
@@ -62,7 +71,7 @@ function renderStatus() {
   moveHistory.innerHTML = "";
   game.moves.slice().reverse().forEach((move) => {
     const item = document.createElement("li");
-    item.textContent = `${PLAYERS[move.player]}: ${move.row + 1}, ${move.col + 1}`;
+    item.textContent = `${getPlayerName(move.player)}: ${move.row + 1}, ${move.col + 1}`;
     moveHistory.appendChild(item);
   });
 }
@@ -76,7 +85,7 @@ function render() {
 
 function getResultLabel() {
   if (game.winner) {
-    return `${PLAYERS[game.winner]} wins`;
+    return `${getPlayerName(game.winner)} wins`;
   }
 
   if (game.isDraw) {
@@ -84,6 +93,13 @@ function getResultLabel() {
   }
 
   return "Playing";
+}
+
+function getPlayerName(player) {
+  const input = player === "black" ? blackNameInput : whiteNameInput;
+  const fallback = isComputerMode() && player === COMPUTER_PLAYER ? "Computer" : PLAYERS[player];
+
+  return input.value.trim() || fallback;
 }
 
 function handleUndo() {
@@ -94,6 +110,14 @@ function handleUndo() {
     clearAnnouncement();
   }
 
+  if (isComputerMode() && game.currentPlayer === COMPUTER_PLAYER && game.moves.length > 0) {
+    const humanMove = undoMove(game);
+
+    if (humanMove.ok) {
+      focusPosition = { row: humanMove.move.row, col: humanMove.move.col };
+    }
+  }
+
   render();
 }
 
@@ -102,6 +126,12 @@ function handleReset() {
   focusPosition = { row: 0, col: 0 };
   clearAnnouncement();
   render();
+}
+
+function handleModeChange(event) {
+  gameMode = event.target.value;
+  whiteNameInput.placeholder = isComputerMode() ? "Computer" : "White";
+  handleReset();
 }
 
 function isFocusedCell(row, col) {
@@ -140,10 +170,36 @@ function playFocusedCell() {
     render();
     focusCell(result.move.row, result.move.col);
     announceGameResult();
+    playComputerTurn();
     return;
   }
 
   focusCell(focusPosition.row, focusPosition.col);
+}
+
+function playComputerTurn() {
+  if (!isComputerMode() || game.currentPlayer !== COMPUTER_PLAYER || game.winner || game.isDraw) {
+    return;
+  }
+
+  const move = chooseComputerMove(game, COMPUTER_PLAYER);
+
+  if (!move) {
+    return;
+  }
+
+  const result = placeStone(game, move.row, move.col);
+
+  if (result.ok) {
+    saveCompletedMatch();
+    render();
+    focusCell(result.move.row, result.move.col);
+    announceGameResult();
+  }
+}
+
+function isComputerMode() {
+  return gameMode === "computer";
 }
 
 function clearAnnouncement() {
@@ -155,7 +211,7 @@ function announceGameResult() {
   let announcement = "";
 
   if (game.winner) {
-    announcement = `${PLAYERS[game.winner]} wins after ${game.moves.length} moves.`;
+    announcement = `${getPlayerName(game.winner)} wins after ${game.moves.length} moves.`;
   } else if (game.isDraw) {
     announcement = `Draw after ${game.moves.length} moves.`;
   }
@@ -294,5 +350,8 @@ boardElement.addEventListener("keydown", (event) => {
 undoButton.addEventListener("click", handleUndo);
 resetButton.addEventListener("click", handleReset);
 clearRecentButton.addEventListener("click", clearRecentMatch);
+blackNameInput.addEventListener("input", render);
+whiteNameInput.addEventListener("input", render);
+gameModeInputs.forEach((input) => input.addEventListener("change", handleModeChange));
 
 render();

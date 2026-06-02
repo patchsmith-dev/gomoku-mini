@@ -181,3 +181,39 @@ test("reset returns the game to the opening state", () => {
   assert.equal(game.currentPlayer, "black");
   assert.deepEqual(engine.countStones(game), { black: 0, white: 0 });
 });
+
+test("computer move opens near the board center", () => {
+  const game = engine.createGame();
+
+  assert.deepEqual(engine.chooseComputerMove(game, "white"), { row: 7, col: 7 });
+});
+
+test("computer move takes an immediate win", () => {
+  const game = engine.createGame();
+
+  game.board[4][4] = "white";
+  game.board[4][5] = "white";
+  game.board[4][6] = "white";
+  game.board[4][7] = "white";
+
+  assert.deepEqual(engine.chooseComputerMove(game, "white"), { row: 4, col: 3 });
+});
+
+test("computer move blocks an immediate opponent win", () => {
+  const game = engine.createGame();
+
+  game.board[8][2] = "black";
+  game.board[8][3] = "black";
+  game.board[8][4] = "black";
+  game.board[8][5] = "black";
+
+  assert.deepEqual(engine.chooseComputerMove(game, "white"), { row: 8, col: 1 });
+});
+
+test("computer move stays near existing stones when no tactical move exists", () => {
+  const game = engine.createGame();
+
+  playMoves(game, [[0, 0]]);
+
+  assert.deepEqual(engine.chooseComputerMove(game, "white"), { row: 1, col: 1 });
+});

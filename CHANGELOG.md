@@ -2,8 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 0.3.0 - 2026-06-03
 
+- Added optional custom player names for status, result, score, move history, and saved match summaries
+- Added optional local computer mode with a tested heuristic move selector
 - Added keyboard board navigation with Arrow keys, Home, End, Enter, and Space
 - Added polite live region announcements for wins and draws
 - Added a localStorage-backed recent completed match summary
