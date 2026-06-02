@@ -4,8 +4,8 @@
 
 - Add optional player names
 - Add saved match history in local storage
-- Add keyboard arrow navigation across the board
-- Add a live region for game result announcements
+- Add high-contrast theme checks
+- Add visible focus testing to the CI checklist
 
 ## Later
 

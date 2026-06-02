@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- Added keyboard board navigation with Arrow keys, Home, End, Enter, and Space
+- Added polite live region announcements for wins and draws
+- Updated accessibility documentation with current keyboard support
+
 ## 0.2.0 - 2026-06-02
 
 - Added a testable game engine module

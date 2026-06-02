@@ -9,11 +9,13 @@ Accessibility is part of the project roadmap, not an afterthought.
 - The board uses ARIA grid metadata
 - Status text updates after each move
 - Controls are reachable with keyboard navigation
+- Arrow keys move focus across board cells
+- Home and End move to the first and last cell in the focused row
+- Enter and Space place a stone on the focused empty cell
+- Wins and draws are announced through a polite live region
 
 ## Planned Improvements
 
-- Add keyboard arrow navigation across board cells
-- Announce winner and draw state through a live region
 - Add high-contrast theme checks
 - Add visible focus testing to the CI checklist
 - Add reduced-motion preferences if animations are introduced

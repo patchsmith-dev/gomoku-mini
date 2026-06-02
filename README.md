@@ -16,7 +16,8 @@ Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in 
 - Move history panel
 - Draw detection
 - Tested game engine
-- Keyboard and screen-reader friendly board cells
+- Keyboard board navigation
+- Screen-reader result announcements
 - No build step and no runtime dependencies
 
 ## Demo
@@ -83,6 +84,12 @@ npm run check
 ## How To Play
 
 Black moves first. Players take turns placing stones on empty intersections. The first player to connect five or more stones horizontally, vertically, or diagonally wins.
+
+Keyboard controls:
+
+- Arrow keys move focus across the board
+- Home and End move to the first and last cell in the focused row
+- Enter or Space places a stone on the focused empty cell
 
 ## Development
 
