@@ -2,10 +2,10 @@
 
 ## Near Term
 
-- Add unit tests for `findWinningLine`
-- Add draw detection when the board is full
 - Add optional player names
 - Add saved match history in local storage
+- Add keyboard arrow navigation across the board
+- Add a live region for game result announcements
 
 ## Later
 

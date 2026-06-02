@@ -1,8 +1,4 @@
-const BOARD_SIZE = 15;
-const PLAYERS = {
-  black: "Black",
-  white: "White",
-};
+const { BOARD_SIZE, PLAYERS, createGame, placeStone, undoMove, resetGame, countStones } = window.GomokuEngine;
 
 const boardElement = document.querySelector("#board");
 const turnLabel = document.querySelector("#turn-label");
@@ -14,15 +10,7 @@ const moveHistory = document.querySelector("#move-history");
 const undoButton = document.querySelector("#undo-button");
 const resetButton = document.querySelector("#reset-button");
 
-let board = createEmptyBoard();
-let currentPlayer = "black";
-let moves = [];
-let winner = null;
-let winningCells = [];
-
-function createEmptyBoard() {
-  return Array.from({ length: BOARD_SIZE }, () => Array(BOARD_SIZE).fill(null));
-}
+let game = createGame();
 
 function renderBoard() {
   boardElement.innerHTML = "";
@@ -30,8 +18,8 @@ function renderBoard() {
   for (let row = 0; row < BOARD_SIZE; row += 1) {
     for (let col = 0; col < BOARD_SIZE; col += 1) {
       const cell = document.createElement("button");
-      const value = board[row][col];
-      const isWinningCell = winningCells.some(([winRow, winCol]) => winRow === row && winCol === col);
+      const value = game.board[row][col];
+      const isWinningCell = game.winningCells.some(([winRow, winCol]) => winRow === row && winCol === col);
 
       cell.type = "button";
       cell.className = ["cell", value, isWinningCell ? "win" : ""].filter(Boolean).join(" ");
@@ -41,7 +29,7 @@ function renderBoard() {
       cell.setAttribute("aria-rowindex", String(row + 1));
       cell.setAttribute("aria-colindex", String(col + 1));
       cell.setAttribute("aria-label", getCellLabel(row, col, value));
-      cell.disabled = Boolean(value || winner);
+      cell.disabled = Boolean(value || game.winner || game.isDraw);
       boardElement.appendChild(cell);
     }
   }
@@ -53,19 +41,18 @@ function getCellLabel(row, col, value) {
 }
 
 function renderStatus() {
-  const blackMoves = moves.filter((move) => move.player === "black").length;
-  const whiteMoves = moves.length - blackMoves;
+  const stoneCounts = countStones(game);
 
-  turnLabel.textContent = PLAYERS[currentPlayer];
-  resultLabel.textContent = winner ? `${PLAYERS[winner]} wins` : "Playing";
-  resultLabel.style.color = winner ? "var(--danger)" : "inherit";
-  blackCount.textContent = String(blackMoves);
-  whiteCount.textContent = String(whiteMoves);
-  moveCount.textContent = String(moves.length);
-  undoButton.disabled = moves.length === 0;
+  turnLabel.textContent = PLAYERS[game.currentPlayer];
+  resultLabel.textContent = getResultLabel();
+  resultLabel.style.color = game.winner ? "var(--danger)" : "inherit";
+  blackCount.textContent = String(stoneCounts.black);
+  whiteCount.textContent = String(stoneCounts.white);
+  moveCount.textContent = String(game.moves.length);
+  undoButton.disabled = game.moves.length === 0;
 
   moveHistory.innerHTML = "";
-  moves.slice().reverse().forEach((move) => {
+  game.moves.slice().reverse().forEach((move) => {
     const item = document.createElement("li");
     item.textContent = `${PLAYERS[move.player]}: ${move.row + 1}, ${move.col + 1}`;
     moveHistory.appendChild(item);
@@ -77,86 +64,25 @@ function render() {
   renderStatus();
 }
 
-function placeStone(row, col) {
-  if (board[row][col] || winner) {
-    return;
+function getResultLabel() {
+  if (game.winner) {
+    return `${PLAYERS[game.winner]} wins`;
   }
 
-  board[row][col] = currentPlayer;
-  moves.push({ row, col, player: currentPlayer });
-
-  const line = findWinningLine(row, col, currentPlayer);
-  if (line.length >= 5) {
-    winner = currentPlayer;
-    winningCells = line;
-  } else {
-    currentPlayer = currentPlayer === "black" ? "white" : "black";
+  if (game.isDraw) {
+    return "Draw";
   }
 
+  return "Playing";
+}
+
+function handleUndo() {
+  undoMove(game);
   render();
 }
 
-function findWinningLine(row, col, player) {
-  const directions = [
-    [0, 1],
-    [1, 0],
-    [1, 1],
-    [1, -1],
-  ];
-
-  for (const [rowStep, colStep] of directions) {
-    const line = [
-      ...collectCells(row, col, player, -rowStep, -colStep).reverse(),
-      [row, col],
-      ...collectCells(row, col, player, rowStep, colStep),
-    ];
-
-    if (line.length >= 5) {
-      return line;
-    }
-  }
-
-  return [];
-}
-
-function collectCells(row, col, player, rowStep, colStep) {
-  const cells = [];
-  let nextRow = row + rowStep;
-  let nextCol = col + colStep;
-
-  while (isInsideBoard(nextRow, nextCol) && board[nextRow][nextCol] === player) {
-    cells.push([nextRow, nextCol]);
-    nextRow += rowStep;
-    nextCol += colStep;
-  }
-
-  return cells;
-}
-
-function isInsideBoard(row, col) {
-  return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
-}
-
-function undoMove() {
-  const lastMove = moves.pop();
-
-  if (!lastMove) {
-    return;
-  }
-
-  board[lastMove.row][lastMove.col] = null;
-  currentPlayer = lastMove.player;
-  winner = null;
-  winningCells = [];
-  render();
-}
-
-function resetGame() {
-  board = createEmptyBoard();
-  currentPlayer = "black";
-  moves = [];
-  winner = null;
-  winningCells = [];
+function handleReset() {
+  resetGame(game);
   render();
 }
 
@@ -167,10 +93,11 @@ boardElement.addEventListener("click", (event) => {
     return;
   }
 
-  placeStone(Number(cell.dataset.row), Number(cell.dataset.col));
+  placeStone(game, Number(cell.dataset.row), Number(cell.dataset.col));
+  render();
 });
 
-undoButton.addEventListener("click", undoMove);
-resetButton.addEventListener("click", resetGame);
+undoButton.addEventListener("click", handleUndo);
+resetButton.addEventListener("click", handleReset);
 
 render();

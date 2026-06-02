@@ -1,0 +1,27 @@
+{
+  "name": "gomoku-mini",
+  "version": "0.2.0",
+  "description": "A lightweight zero-dependency browser Gomoku game.",
+  "private": false,
+  "license": "MIT",
+  "scripts": {
+    "check": "node --check src/engine.js && node --check src/main.js && node --test",
+    "test": "node --test",
+    "serve": "python -m http.server 8000"
+  },
+  "keywords": [
+    "gomoku",
+    "board-game",
+    "javascript",
+    "open-source",
+    "beginner-friendly"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/patchsmith-dev/gomoku-mini.git"
+  },
+  "bugs": {
+    "url": "https://github.com/patchsmith-dev/gomoku-mini/issues"
+  },
+  "homepage": "https://patchsmith-dev.github.io/gomoku-mini/"
+}

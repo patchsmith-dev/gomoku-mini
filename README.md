@@ -1,5 +1,9 @@
 # Gomoku Mini
 
+[![CI](https://github.com/patchsmith-dev/gomoku-mini/actions/workflows/ci.yml/badge.svg)](https://github.com/patchsmith-dev/gomoku-mini/actions/workflows/ci.yml)
+[![GitHub Pages](https://github.com/patchsmith-dev/gomoku-mini/actions/workflows/pages.yml/badge.svg)](https://github.com/patchsmith-dev/gomoku-mini/actions/workflows/pages.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in the browser. It is designed as a beginner-friendly open source project: small enough to understand in one sitting, but complete enough to be useful for learning, demos, and community contributions.
 
 ## Features
@@ -10,33 +14,46 @@ Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in 
 - Five-in-a-row win detection
 - Undo and reset controls
 - Move history panel
+- Draw detection
+- Tested game engine
 - Keyboard and screen-reader friendly board cells
 - No build step and no runtime dependencies
 
 ## Demo
 
-Open `index.html` in any modern browser.
+Try the GitHub Pages demo:
+
+```text
+https://patchsmith-dev.github.io/gomoku-mini/
+```
+
+You can also open `index.html` locally or serve the directory with a tiny static server.
 
 ## Project Structure
 
 ```text
 gomoku-mini/
-├── .github/
-│   ├── ISSUE_TEMPLATE/
-│   │   ├── bug_report.md
-│   │   └── feature_request.md
-│   └── pull_request_template.md
-├── docs/
-│   └── ROADMAP.md
-├── src/
-│   ├── main.js
-│   └── styles.css
-├── CHANGELOG.md
-├── CODE_OF_CONDUCT.md
-├── CONTRIBUTING.md
-├── LICENSE
-├── README.md
-└── index.html
+|-- .github/
+|   |-- ISSUE_TEMPLATE/
+|   |-- workflows/
+|   |-- CODEOWNERS
+|   `-- pull_request_template.md
+|-- docs/
+|   |-- ACCESSIBILITY.md
+|   |-- ARCHITECTURE.md
+|   |-- RELEASE_CHECKLIST.md
+|   `-- ROADMAP.md
+|-- src/
+|   |-- engine.js
+|   |-- main.js
+|   `-- styles.css
+|-- test/
+|   `-- engine.test.js
+|-- CHANGELOG.md
+|-- CONTRIBUTING.md
+|-- LICENSE
+|-- package.json
+`-- index.html
 ```
 
 ## Getting Started
@@ -44,21 +61,24 @@ gomoku-mini/
 Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/gomoku-mini.git
+git clone https://github.com/patchsmith-dev/gomoku-mini.git
 cd gomoku-mini
 ```
 
 Run the game:
 
 ```bash
-# Option 1: open directly
-open index.html
-
-# Option 2: use a tiny local server
+# Use a tiny local server
 python -m http.server 8000
 ```
 
 Then visit `http://localhost:8000`.
+
+Run checks:
+
+```bash
+npm run check
+```
 
 ## How To Play
 
@@ -68,18 +88,22 @@ Black moves first. Players take turns placing stones on empty intersections. The
 
 This project intentionally uses plain HTML, CSS, and JavaScript.
 
+The rule engine lives in `src/engine.js` and is covered by Node.js tests in `test/engine.test.js`.
+
 Useful areas for contributors:
 
 - Improve mobile layout and touch behavior
 - Add player names
 - Add optional timer mode
 - Add simple computer opponent
-- Add tests for the win-checking logic
 - Add translations
+- Improve accessibility
 
 ## Contributing
 
 Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+
+Good first issue ideas are tracked in the issue queue.
 
 ## License
 
