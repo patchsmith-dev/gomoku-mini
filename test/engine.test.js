@@ -117,6 +117,57 @@ test("undo clears a winning state and restores the player turn", () => {
   assert.equal(game.moves.length, 8);
 });
 
+test("sets isDraw on a full board with no winner", () => {
+  const game = engine.createGame(3);
+
+  playMoves(game, [
+    [0, 0],
+    [0, 1],
+    [0, 2],
+    [1, 1],
+    [1, 0],
+    [1, 2],
+    [2, 1],
+    [2, 0],
+    [2, 2],
+  ]);
+
+  assert.equal(game.winner, null);
+  assert.equal(game.isDraw, true);
+});
+
+test("rejects moves when the game is already marked as a draw", () => {
+  const game = engine.createGame(3);
+
+  game.isDraw = true;
+
+  assert.equal(engine.placeStone(game, 0, 0).reason, "game-over");
+});
+
+test("undo after a draw clears isDraw and restores the previous turn", () => {
+  const game = engine.createGame(3);
+
+  playMoves(game, [
+    [0, 0],
+    [0, 1],
+    [0, 2],
+    [1, 1],
+    [1, 0],
+    [1, 2],
+    [2, 1],
+    [2, 0],
+    [2, 2],
+  ]);
+
+  const result = engine.undoMove(game);
+
+  assert.equal(result.ok, true);
+  assert.equal(game.isDraw, false);
+  assert.equal(game.currentPlayer, "black");
+  assert.equal(game.moves.length, 8);
+  assert.equal(game.board[2][2], null);
+});
+
 test("reset returns the game to the opening state", () => {
   const game = engine.createGame();
 
