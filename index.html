@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gomoku Mini</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="game-surface" aria-labelledby="game-title">
+        <div class="top-bar">
+          <div>
+            <p class="eyebrow">Open source board game</p>
+            <h1 id="game-title">Gomoku Mini</h1>
+          </div>
+          <div class="actions" aria-label="Game controls">
+            <button id="undo-button" type="button">Undo</button>
+            <button id="reset-button" type="button">Reset</button>
+          </div>
+        </div>
+
+        <div class="play-layout">
+          <div class="board-wrap">
+            <div
+              id="board"
+              class="board"
+              role="grid"
+              aria-label="Gomoku board"
+              aria-rowcount="15"
+              aria-colcount="15"
+            ></div>
+          </div>
+
+          <aside class="side-panel" aria-label="Game status">
+            <div class="status-block">
+              <span class="label">Turn</span>
+              <strong id="turn-label">Black</strong>
+            </div>
+            <div class="status-block">
+              <span class="label">Result</span>
+              <strong id="result-label">Playing</strong>
+            </div>
+            <div class="score-grid">
+              <div>
+                <span class="stone-sample black"></span>
+                <span>Black</span>
+                <strong id="black-count">0</strong>
+              </div>
+              <div>
+                <span class="stone-sample white"></span>
+                <span>White</span>
+                <strong id="white-count">0</strong>
+              </div>
+            </div>
+            <div class="history-box">
+              <div class="history-head">
+                <span class="label">Moves</span>
+                <strong id="move-count">0</strong>
+              </div>
+              <ol id="move-history" aria-label="Move history"></ol>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <script src="src/main.js"></script>
+  </body>
+</html>
