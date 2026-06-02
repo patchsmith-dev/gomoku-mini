@@ -203,7 +203,8 @@ h1 {
 
 .status-block,
 .score-grid,
-.history-box {
+.history-box,
+.recent-match {
   border: 1px solid rgba(31, 41, 51, 0.1);
   border-radius: 8px;
   background: var(--panel);
@@ -279,6 +280,29 @@ h1 {
   color: var(--muted);
 }
 
+.recent-match {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+}
+
+.recent-match > div {
+  display: grid;
+  gap: 6px;
+}
+
+.recent-match time {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.recent-match button {
+  min-height: 36px;
+  padding: 0 12px;
+}
+
 @media (max-width: 900px) {
   .play-layout {
     grid-template-columns: 1fr;
@@ -294,6 +318,10 @@ h1 {
   }
 
   .history-box {
+    grid-column: 1 / -1;
+  }
+
+  .recent-match {
     grid-column: 1 / -1;
   }
 }

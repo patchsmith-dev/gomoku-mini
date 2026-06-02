@@ -8,8 +8,12 @@ const whiteCount = document.querySelector("#white-count");
 const moveCount = document.querySelector("#move-count");
 const moveHistory = document.querySelector("#move-history");
 const statusAnnouncer = document.querySelector("#status-announcer");
+const recentMatchLabel = document.querySelector("#recent-match-label");
+const recentMatchTime = document.querySelector("#recent-match-time");
+const clearRecentButton = document.querySelector("#clear-recent-button");
 const undoButton = document.querySelector("#undo-button");
 const resetButton = document.querySelector("#reset-button");
+const MATCH_STORAGE_KEY = "gomoku-mini:recent-match";
 
 let game = createGame();
 let focusPosition = { row: 0, col: 0 };
@@ -67,6 +71,7 @@ function render() {
   normalizeFocusPosition();
   renderBoard();
   renderStatus();
+  renderRecentMatch();
 }
 
 function getResultLabel() {
@@ -131,6 +136,7 @@ function playFocusedCell() {
   const result = placeStone(game, focusPosition.row, focusPosition.col);
 
   if (result.ok) {
+    saveCompletedMatch();
     render();
     focusCell(result.move.row, result.move.col);
     announceGameResult();
@@ -158,6 +164,88 @@ function announceGameResult() {
     statusAnnouncer.textContent = announcement;
     lastAnnouncement = announcement;
   }
+}
+
+function saveCompletedMatch() {
+  if (!game.winner && !game.isDraw) {
+    return;
+  }
+
+  writeRecentMatch({
+    completedAt: new Date().toISOString(),
+    moves: game.moves.length,
+    result: getResultLabel(),
+  });
+}
+
+function readRecentMatch() {
+  try {
+    const storedMatch = window.localStorage.getItem(MATCH_STORAGE_KEY);
+
+    if (!storedMatch) {
+      return null;
+    }
+
+    const match = JSON.parse(storedMatch);
+
+    if (typeof match.result !== "string" || typeof match.moves !== "number" || typeof match.completedAt !== "string") {
+      return null;
+    }
+
+    return match;
+  } catch {
+    return null;
+  }
+}
+
+function writeRecentMatch(match) {
+  try {
+    window.localStorage.setItem(MATCH_STORAGE_KEY, JSON.stringify(match));
+  } catch {
+    // Some privacy modes disable localStorage. The game should keep working.
+  }
+}
+
+function clearRecentMatch() {
+  try {
+    window.localStorage.removeItem(MATCH_STORAGE_KEY);
+  } catch {
+    // Ignore storage failures; the UI will fall back to the empty state.
+  }
+
+  renderRecentMatch();
+}
+
+function renderRecentMatch() {
+  const match = readRecentMatch();
+
+  if (!match) {
+    recentMatchLabel.textContent = "No completed match yet";
+    recentMatchTime.textContent = "";
+    recentMatchTime.dateTime = "";
+    clearRecentButton.disabled = true;
+    return;
+  }
+
+  recentMatchLabel.textContent = `${match.result} after ${match.moves} moves`;
+  recentMatchTime.textContent = formatCompletedAt(match.completedAt);
+  recentMatchTime.dateTime = match.completedAt;
+  clearRecentButton.disabled = false;
+}
+
+function formatCompletedAt(completedAt) {
+  const date = new Date(completedAt);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Saved recently";
+  }
+
+  return `Saved ${date.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })}`;
 }
 
 boardElement.addEventListener("click", (event) => {
@@ -205,5 +293,6 @@ boardElement.addEventListener("keydown", (event) => {
 
 undoButton.addEventListener("click", handleUndo);
 resetButton.addEventListener("click", handleReset);
+clearRecentButton.addEventListener("click", clearRecentMatch);
 
 render();

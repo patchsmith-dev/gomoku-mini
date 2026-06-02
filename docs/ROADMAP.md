@@ -3,7 +3,6 @@
 ## Near Term
 
 - Add optional player names
-- Add saved match history in local storage
 - Add high-contrast theme checks
 - Add visible focus testing to the CI checklist
 

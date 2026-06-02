@@ -14,6 +14,7 @@ Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in 
 - Five-in-a-row win detection
 - Undo and reset controls
 - Move history panel
+- Recent completed match summary
 - Draw detection
 - Tested game engine
 - Keyboard board navigation
