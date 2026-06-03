@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.3.1 - 2026-06-03
+
 - Added a local high-contrast display toggle, including board-edge contrast
 - Updated contributor suggestions after completed player-name and computer-mode work
 
