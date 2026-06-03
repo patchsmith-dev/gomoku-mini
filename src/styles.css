@@ -28,6 +28,19 @@ body {
     #eef2f0;
 }
 
+body.high-contrast {
+  --ink: #050505;
+  --muted: #1f2933;
+  --paper: #fff1ad;
+  --panel: #ffffff;
+  --line: #050505;
+  --accent: #004f46;
+  --accent-dark: #003832;
+  --danger: #8b0000;
+  --shadow: 0 0 0 3px #050505;
+  background: #ffffff;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -195,6 +208,38 @@ h1 {
   background: rgba(159, 45, 45, 0.16);
 }
 
+body.high-contrast .game-surface,
+body.high-contrast .status-block,
+body.high-contrast .score-grid,
+body.high-contrast .history-box,
+body.high-contrast .recent-match,
+body.high-contrast .setup-panel {
+  border-color: #050505;
+}
+
+body.high-contrast .cell:hover,
+body.high-contrast .cell:focus-visible {
+  outline: 4px solid #004f46;
+  outline-offset: -4px;
+  background: rgba(0, 79, 70, 0.18);
+}
+
+body.high-contrast .cell.black::after {
+  background: #000000;
+  box-shadow: 0 0 0 2px #000000;
+}
+
+body.high-contrast .cell.white::after {
+  background: #ffffff;
+  box-shadow:
+    0 0 0 2px #000000,
+    inset 0 0 0 1px #ffffff;
+}
+
+body.high-contrast .cell.win {
+  background: #ffd4d4;
+}
+
 .side-panel {
   display: flex;
   flex-direction: column;
@@ -294,6 +339,20 @@ h1 {
   outline-offset: 2px;
 }
 
+.contrast-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.contrast-toggle input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+}
+
 .score-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -371,6 +430,20 @@ h1 {
 .recent-match button {
   min-height: 36px;
   padding: 0 12px;
+}
+
+@media (prefers-contrast: more), (forced-colors: active) {
+  body:not(.standard-contrast) {
+    --ink: CanvasText;
+    --muted: CanvasText;
+    --paper: Canvas;
+    --panel: Canvas;
+    --line: CanvasText;
+    --accent: Highlight;
+    --accent-dark: Highlight;
+    --danger: Mark;
+    background: Canvas;
+  }
 }
 
 @media (max-width: 900px) {

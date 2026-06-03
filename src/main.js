@@ -16,15 +16,18 @@ const statusAnnouncer = document.querySelector("#status-announcer");
 const recentMatchLabel = document.querySelector("#recent-match-label");
 const recentMatchTime = document.querySelector("#recent-match-time");
 const clearRecentButton = document.querySelector("#clear-recent-button");
+const contrastToggle = document.querySelector("#contrast-toggle");
 const undoButton = document.querySelector("#undo-button");
 const resetButton = document.querySelector("#reset-button");
 const MATCH_STORAGE_KEY = "gomoku-mini:recent-match";
+const CONTRAST_STORAGE_KEY = "gomoku-mini:high-contrast";
 const COMPUTER_PLAYER = "white";
 
 let game = createGame();
 let gameMode = "two-player";
 let focusPosition = { row: 0, col: 0 };
 let lastAnnouncement = "";
+let highContrastEnabled = readHighContrastPreference();
 
 function renderBoard() {
   boardElement.innerHTML = "";
@@ -78,6 +81,7 @@ function renderStatus() {
 
 function render() {
   normalizeFocusPosition();
+  renderContrastPreference();
   renderBoard();
   renderStatus();
   renderRecentMatch();
@@ -304,6 +308,33 @@ function formatCompletedAt(completedAt) {
   })}`;
 }
 
+function readHighContrastPreference() {
+  try {
+    return window.localStorage.getItem(CONTRAST_STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function writeHighContrastPreference(isEnabled) {
+  try {
+    window.localStorage.setItem(CONTRAST_STORAGE_KEY, String(isEnabled));
+  } catch {
+    // Some privacy modes disable localStorage. The visual toggle should still work.
+  }
+}
+
+function renderContrastPreference() {
+  document.body.classList.toggle("high-contrast", highContrastEnabled);
+  contrastToggle.checked = highContrastEnabled;
+}
+
+function handleContrastChange() {
+  highContrastEnabled = contrastToggle.checked;
+  writeHighContrastPreference(highContrastEnabled);
+  renderContrastPreference();
+}
+
 boardElement.addEventListener("click", (event) => {
   const cell = event.target.closest(".cell");
 
@@ -350,6 +381,7 @@ boardElement.addEventListener("keydown", (event) => {
 undoButton.addEventListener("click", handleUndo);
 resetButton.addEventListener("click", handleReset);
 clearRecentButton.addEventListener("click", clearRecentMatch);
+contrastToggle.addEventListener("change", handleContrastChange);
 blackNameInput.addEventListener("input", render);
 whiteNameInput.addEventListener("input", render);
 gameModeInputs.forEach((input) => input.addEventListener("change", handleModeChange));

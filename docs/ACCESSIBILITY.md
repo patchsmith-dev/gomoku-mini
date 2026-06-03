@@ -13,10 +13,10 @@ Accessibility is part of the project roadmap, not an afterthought.
 - Home and End move to the first and last cell in the focused row
 - Enter and Space place a stone on the focused empty cell
 - Wins and draws are announced through a polite live region
+- A local high-contrast display toggle is available in the setup panel
 
 ## Planned Improvements
 
-- Add high-contrast theme checks
 - Add visible focus testing to the CI checklist
 - Add reduced-motion preferences if animations are introduced
 

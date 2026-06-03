@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- Added a local high-contrast display toggle
+- Updated contributor suggestions after completed player-name and computer-mode work
+
 ## 0.3.0 - 2026-06-03
 
 - Added optional custom player names for status, result, score, move history, and saved match summaries

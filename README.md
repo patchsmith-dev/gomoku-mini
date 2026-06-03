@@ -21,6 +21,7 @@ Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in 
 - Tested game engine
 - Keyboard board navigation
 - Screen-reader result announcements
+- Optional high-contrast display mode
 - No build step and no runtime dependencies
 
 ## Demo
@@ -105,11 +106,10 @@ The rule engine lives in `src/engine.js` and is covered by Node.js tests in `tes
 Useful areas for contributors:
 
 - Improve mobile layout and touch behavior
-- Add player names
 - Add optional timer mode
-- Add simple computer opponent
+- Improve computer opponent difficulty
 - Add translations
-- Improve accessibility
+- Add visible focus checks
 
 ## Contributing
 
