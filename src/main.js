@@ -497,7 +497,7 @@ function renderRecentMatch() {
   const match = readRecentMatch();
 
   if (!match) {
-    recentMatchLabel.textContent = "No completed match yet";
+    recentMatchLabel.textContent = getText("noCompletedMatch");
     recentMatchTime.textContent = "";
     recentMatchTime.dateTime = "";
     clearRecentButton.disabled = true;

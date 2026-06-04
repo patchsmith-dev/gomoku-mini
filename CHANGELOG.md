@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.3.5 - 2026-06-05
+
+- Fixed the empty recent-match state so it follows the selected interface language
+- Added regression coverage for recent-match localization
+
 ## 0.3.4 - 2026-06-04
 
 - Added a saved language selector for English and Chinese
