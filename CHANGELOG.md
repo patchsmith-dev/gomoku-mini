@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.3.3 - 2026-06-04
+
+- Added selectable computer difficulty with Easy and Normal modes
+- Added engine coverage for difficulty-specific computer move selection
+- Updated roadmap and README after completing selectable difficulty
+
 ## 0.3.2 - 2026-06-04
 
 - Added an optional elapsed game timer that starts on the first move and stops when the match ends

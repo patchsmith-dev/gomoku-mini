@@ -13,6 +13,10 @@
     black: "Black",
     white: "White",
   };
+  const COMPUTER_DIFFICULTIES = {
+    easy: "Easy",
+    normal: "Normal",
+  };
   const DIRECTIONS = [
     [0, 1],
     [1, 0],
@@ -100,9 +104,13 @@
     };
   }
 
-  function chooseComputerMove(game, player = "white") {
+  function chooseComputerMove(game, player = "white", difficulty = "normal") {
     if (game.winner || game.isDraw) {
       return null;
+    }
+
+    if (difficulty === "easy") {
+      return chooseNearbyMove(game);
     }
 
     const winningMove = findImmediateMove(game, player);
@@ -220,6 +228,7 @@
   return {
     BOARD_SIZE,
     PLAYERS,
+    COMPUTER_DIFFICULTIES,
     createEmptyBoard,
     createGame,
     placeStone,

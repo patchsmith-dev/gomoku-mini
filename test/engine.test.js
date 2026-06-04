@@ -199,6 +199,23 @@ test("computer move takes an immediate win", () => {
   assert.deepEqual(engine.chooseComputerMove(game, "white"), { row: 4, col: 3 });
 });
 
+test("easy computer difficulty skips tactical search", () => {
+  const game = engine.createGame();
+
+  [
+    [4, 4],
+    [4, 5],
+    [4, 6],
+    [4, 7],
+  ].forEach(([row, col]) => {
+    game.board[row][col] = "white";
+    game.moves.push({ row, col, player: "white" });
+  });
+
+  assert.deepEqual(engine.chooseComputerMove(game, "white", "normal"), { row: 4, col: 3 });
+  assert.deepEqual(engine.chooseComputerMove(game, "white", "easy"), { row: 5, col: 7 });
+});
+
 test("computer move blocks an immediate opponent win", () => {
   const game = engine.createGame();
 

@@ -1,10 +1,12 @@
-const { BOARD_SIZE, PLAYERS, chooseComputerMove, createGame, placeStone, undoMove, resetGame, countStones } = window.GomokuEngine;
+const { BOARD_SIZE, PLAYERS, COMPUTER_DIFFICULTIES, chooseComputerMove, createGame, placeStone, undoMove, resetGame, countStones } =
+  window.GomokuEngine;
 
 const boardElement = document.querySelector("#board");
 const turnLabel = document.querySelector("#turn-label");
 const resultLabel = document.querySelector("#result-label");
 const blackNameInput = document.querySelector("#black-name-input");
 const whiteNameInput = document.querySelector("#white-name-input");
+const difficultySelect = document.querySelector("#difficulty-select");
 const gameModeInputs = document.querySelectorAll('input[name="game-mode"]');
 const blackScoreName = document.querySelector("#black-score-name");
 const whiteScoreName = document.querySelector("#white-score-name");
@@ -89,6 +91,7 @@ function render() {
   normalizeFocusPosition();
   renderContrastPreference();
   renderTimerStatus();
+  renderComputerOptions();
   renderBoard();
   renderStatus();
   renderRecentMatch();
@@ -146,7 +149,6 @@ function handleReset() {
 
 function handleModeChange(event) {
   gameMode = event.target.value;
-  whiteNameInput.placeholder = isComputerMode() ? "Computer" : "White";
   handleReset();
 }
 
@@ -200,7 +202,7 @@ function playComputerTurn() {
     return;
   }
 
-  const move = chooseComputerMove(game, COMPUTER_PLAYER);
+  const move = chooseComputerMove(game, COMPUTER_PLAYER, difficultySelect.value);
 
   if (!move) {
     return;
@@ -220,6 +222,13 @@ function playComputerTurn() {
 
 function isComputerMode() {
   return gameMode === "computer";
+}
+
+function renderComputerOptions() {
+  const isEnabled = isComputerMode();
+  whiteNameInput.placeholder = isEnabled ? "Computer" : "White";
+  difficultySelect.disabled = !isEnabled;
+  difficultySelect.title = isEnabled ? `${COMPUTER_DIFFICULTIES[difficultySelect.value]} computer` : "Only used in Computer mode";
 }
 
 function clearAnnouncement() {
@@ -480,6 +489,7 @@ contrastToggle.addEventListener("change", handleContrastChange);
 timerToggle.addEventListener("change", handleTimerChange);
 blackNameInput.addEventListener("input", render);
 whiteNameInput.addEventListener("input", render);
+difficultySelect.addEventListener("change", render);
 gameModeInputs.forEach((input) => input.addEventListener("change", handleModeChange));
 
 render();

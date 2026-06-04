@@ -279,7 +279,8 @@ body.high-contrast .cell.win {
 }
 
 .mode-row,
-.name-field {
+.name-field,
+.difficulty-field {
   display: grid;
   gap: 8px;
 }
@@ -325,7 +326,8 @@ body.high-contrast .cell.win {
   outline-offset: 2px;
 }
 
-.name-field input {
+.name-field input,
+.difficulty-field select {
   width: 100%;
   min-height: 40px;
   border: 1px solid rgba(31, 41, 51, 0.14);
@@ -336,7 +338,17 @@ body.high-contrast .cell.win {
   font: inherit;
 }
 
-.name-field input:focus {
+.difficulty-field select {
+  cursor: pointer;
+}
+
+.difficulty-field select:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.name-field input:focus,
+.difficulty-field select:focus {
   outline: 2px solid rgba(29, 122, 111, 0.55);
   outline-offset: 2px;
 }
