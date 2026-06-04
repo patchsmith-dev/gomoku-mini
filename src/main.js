@@ -1,4 +1,4 @@
-const { BOARD_SIZE, PLAYERS, COMPUTER_DIFFICULTIES, chooseComputerMove, createGame, placeStone, undoMove, resetGame, countStones } =
+const { BOARD_SIZE, chooseComputerMove, createGame, placeStone, undoMove, resetGame, countStones } =
   window.GomokuEngine;
 
 const boardElement = document.querySelector("#board");
@@ -6,6 +6,7 @@ const turnLabel = document.querySelector("#turn-label");
 const resultLabel = document.querySelector("#result-label");
 const blackNameInput = document.querySelector("#black-name-input");
 const whiteNameInput = document.querySelector("#white-name-input");
+const languageSelect = document.querySelector("#language-select");
 const difficultySelect = document.querySelector("#difficulty-select");
 const gameModeInputs = document.querySelectorAll('input[name="game-mode"]');
 const blackScoreName = document.querySelector("#black-score-name");
@@ -25,12 +26,163 @@ const undoButton = document.querySelector("#undo-button");
 const resetButton = document.querySelector("#reset-button");
 const MATCH_STORAGE_KEY = "gomoku-mini:recent-match";
 const CONTRAST_STORAGE_KEY = "gomoku-mini:high-contrast";
+const LANGUAGE_STORAGE_KEY = "gomoku-mini:language";
 const COMPUTER_PLAYER = "white";
+const DEFAULT_LANGUAGE = "en";
+const TRANSLATIONS = {
+  en: {
+    documentTitle: "Gomoku Mini",
+    eyebrow: "Open source board game",
+    gameControls: "Game controls",
+    board: "Gomoku board",
+    gameStatus: "Game status",
+    gameSetup: "Game setup",
+    gameMode: "Game mode",
+    language: "Language",
+    mode: "Mode",
+    twoPlayer: "Two Player",
+    computer: "Computer",
+    black: "Black",
+    white: "White",
+    difficulty: "Difficulty",
+    normal: "Normal",
+    easy: "Easy",
+    highContrast: "High contrast",
+    timer: "Timer",
+    turn: "Turn",
+    result: "Result",
+    time: "Time",
+    moves: "Moves",
+    recentMatch: "Recent Match",
+    moveHistory: "Move history",
+    noCompletedMatch: "No completed match yet",
+    clear: "Clear",
+    undo: "Undo",
+    reset: "Reset",
+    playing: "Playing",
+    draw: "Draw",
+    off: "Off",
+    onlyComputerMode: "Only used in Computer mode",
+    computerTitle(difficulty) {
+      return `${difficulty} computer`;
+    },
+    cellPosition(row, col) {
+      return `row ${row}, column ${col}`;
+    },
+    emptyCellAt(position) {
+      return `Empty cell at ${position}`;
+    },
+    stoneAt(playerName, position) {
+      return `${playerName} stone at ${position}`;
+    },
+    moveEntry(playerName, row, col) {
+      return `${playerName}: ${row}, ${col}`;
+    },
+    wins(playerName) {
+      return `${playerName} wins`;
+    },
+    winsAfter(playerName, moves) {
+      return `${playerName} wins after ${moves} moves.`;
+    },
+    drawAfter(moves) {
+      return `Draw after ${moves} moves.`;
+    },
+    recentSummary(result, moves, timeText) {
+      return `${result} after ${moves} moves${timeText}`;
+    },
+    timeSuffix(timeText) {
+      return ` in ${timeText}`;
+    },
+    savedRecently: "Saved recently",
+    savedAt(date) {
+      return `Saved ${date.toLocaleString(undefined, {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })}`;
+    },
+  },
+  zh: {
+    documentTitle: "Gomoku Mini",
+    eyebrow: "开源棋盘游戏",
+    gameControls: "游戏控制",
+    board: "五子棋棋盘",
+    gameStatus: "游戏状态",
+    gameSetup: "游戏设置",
+    gameMode: "游戏模式",
+    language: "语言",
+    mode: "模式",
+    twoPlayer: "双人",
+    computer: "电脑",
+    black: "黑方",
+    white: "白方",
+    difficulty: "难度",
+    normal: "普通",
+    easy: "简单",
+    highContrast: "高对比度",
+    timer: "计时器",
+    turn: "回合",
+    result: "结果",
+    time: "时间",
+    moves: "步数",
+    recentMatch: "最近对局",
+    moveHistory: "走子记录",
+    noCompletedMatch: "暂无已完成对局",
+    clear: "清除",
+    undo: "悔棋",
+    reset: "重置",
+    playing: "进行中",
+    draw: "平局",
+    off: "关闭",
+    onlyComputerMode: "仅在电脑模式使用",
+    computerTitle(difficulty) {
+      return `${difficulty}电脑`;
+    },
+    cellPosition(row, col) {
+      return `第 ${row} 行，第 ${col} 列`;
+    },
+    emptyCellAt(position) {
+      return `空位，${position}`;
+    },
+    stoneAt(playerName, position) {
+      return `${playerName}棋子，${position}`;
+    },
+    moveEntry(playerName, row, col) {
+      return `${playerName}：${row}，${col}`;
+    },
+    wins(playerName) {
+      return `${playerName}获胜`;
+    },
+    winsAfter(playerName, moves) {
+      return `${playerName}在 ${moves} 手后获胜。`;
+    },
+    drawAfter(moves) {
+      return `平局，共 ${moves} 手。`;
+    },
+    recentSummary(result, moves, timeText) {
+      return `${result}，共 ${moves} 手${timeText}`;
+    },
+    timeSuffix(timeText) {
+      return `，用时 ${timeText}`;
+    },
+    savedRecently: "刚刚保存",
+    savedAt(date) {
+      return `已保存 ${date.toLocaleString("zh-CN", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })}`;
+    },
+  },
+};
 
 let game = createGame();
 let gameMode = "two-player";
 let focusPosition = { row: 0, col: 0 };
 let lastAnnouncement = "";
+let language = readLanguagePreference();
 let highContrastEnabled = readHighContrastPreference();
 let timerEnabled = false;
 let timerStartedAt = null;
@@ -62,8 +214,8 @@ function renderBoard() {
 }
 
 function getCellLabel(row, col, value) {
-  const position = `row ${row + 1}, column ${col + 1}`;
-  return value ? `${getPlayerName(value)} stone at ${position}` : `Empty cell at ${position}`;
+  const position = getText("cellPosition")(row + 1, col + 1);
+  return value ? getText("stoneAt")(getPlayerName(value), position) : getText("emptyCellAt")(position);
 }
 
 function renderStatus() {
@@ -82,13 +234,14 @@ function renderStatus() {
   moveHistory.innerHTML = "";
   game.moves.slice().reverse().forEach((move) => {
     const item = document.createElement("li");
-    item.textContent = `${getPlayerName(move.player)}: ${move.row + 1}, ${move.col + 1}`;
+    item.textContent = getText("moveEntry")(getPlayerName(move.player), move.row + 1, move.col + 1);
     moveHistory.appendChild(item);
   });
 }
 
 function render() {
   normalizeFocusPosition();
+  renderLanguage();
   renderContrastPreference();
   renderTimerStatus();
   renderComputerOptions();
@@ -97,21 +250,39 @@ function render() {
   renderRecentMatch();
 }
 
+function getText(key) {
+  return TRANSLATIONS[language][key] ?? TRANSLATIONS[DEFAULT_LANGUAGE][key];
+}
+
+function renderLanguage() {
+  document.documentElement.lang = language === "zh" ? "zh-CN" : "en";
+  document.title = getText("documentTitle");
+  languageSelect.value = language;
+
+  document.querySelectorAll("[data-i18n]").forEach((element) => {
+    element.textContent = getText(element.dataset.i18n);
+  });
+
+  document.querySelectorAll("[data-i18n-aria]").forEach((element) => {
+    element.setAttribute("aria-label", getText(element.dataset.i18nAria));
+  });
+}
+
 function getResultLabel() {
   if (game.winner) {
-    return `${getPlayerName(game.winner)} wins`;
+    return getText("wins")(getPlayerName(game.winner));
   }
 
   if (game.isDraw) {
-    return "Draw";
+    return getText("draw");
   }
 
-  return "Playing";
+  return getText("playing");
 }
 
 function getPlayerName(player) {
   const input = player === "black" ? blackNameInput : whiteNameInput;
-  const fallback = isComputerMode() && player === COMPUTER_PLAYER ? "Computer" : PLAYERS[player];
+  const fallback = isComputerMode() && player === COMPUTER_PLAYER ? getText("computer") : getText(player);
 
   return input.value.trim() || fallback;
 }
@@ -226,9 +397,10 @@ function isComputerMode() {
 
 function renderComputerOptions() {
   const isEnabled = isComputerMode();
-  whiteNameInput.placeholder = isEnabled ? "Computer" : "White";
+  blackNameInput.placeholder = getText("black");
+  whiteNameInput.placeholder = isEnabled ? getText("computer") : getText("white");
   difficultySelect.disabled = !isEnabled;
-  difficultySelect.title = isEnabled ? `${COMPUTER_DIFFICULTIES[difficultySelect.value]} computer` : "Only used in Computer mode";
+  difficultySelect.title = isEnabled ? getText("computerTitle")(getText(difficultySelect.value)) : getText("onlyComputerMode");
 }
 
 function clearAnnouncement() {
@@ -240,9 +412,9 @@ function announceGameResult() {
   let announcement = "";
 
   if (game.winner) {
-    announcement = `${getPlayerName(game.winner)} wins after ${game.moves.length} moves.`;
+    announcement = getText("winsAfter")(getPlayerName(game.winner), game.moves.length);
   } else if (game.isDraw) {
-    announcement = `Draw after ${game.moves.length} moves.`;
+    announcement = getText("drawAfter")(game.moves.length);
   }
 
   if (announcement && announcement !== lastAnnouncement) {
@@ -260,6 +432,9 @@ function saveCompletedMatch() {
     completedAt: new Date().toISOString(),
     elapsedSeconds: timerEnabled ? Math.floor(getElapsedTimeMs() / 1000) : null,
     moves: game.moves.length,
+    resultType: game.winner ? "win" : "draw",
+    winner: game.winner,
+    winnerName: game.winner ? getPlayerName(game.winner) : null,
     result: getResultLabel(),
   });
 }
@@ -279,6 +454,18 @@ function readRecentMatch() {
     }
 
     if (match.elapsedSeconds !== undefined && match.elapsedSeconds !== null && typeof match.elapsedSeconds !== "number") {
+      return null;
+    }
+
+    if (match.resultType !== undefined && !["win", "draw"].includes(match.resultType)) {
+      return null;
+    }
+
+    if (match.winner !== undefined && match.winner !== null && !["black", "white"].includes(match.winner)) {
+      return null;
+    }
+
+    if (match.winnerName !== undefined && match.winnerName !== null && typeof match.winnerName !== "string") {
       return null;
     }
 
@@ -317,29 +504,48 @@ function renderRecentMatch() {
     return;
   }
 
-  recentMatchLabel.textContent = `${match.result} after ${match.moves} moves${formatRecentMatchTime(match)}`;
+  recentMatchLabel.textContent = getText("recentSummary")(getRecentMatchResult(match), match.moves, formatRecentMatchTime(match));
   recentMatchTime.textContent = formatCompletedAt(match.completedAt);
   recentMatchTime.dateTime = match.completedAt;
   clearRecentButton.disabled = false;
 }
 
+function getRecentMatchResult(match) {
+  if (match.resultType === "draw") {
+    return getText("draw");
+  }
+
+  if (match.resultType === "win" && match.winner) {
+    return getText("wins")(getSavedWinnerName(match));
+  }
+
+  return match.result;
+}
+
+function getSavedWinnerName(match) {
+  if (!match.winnerName || match.winnerName === TRANSLATIONS.en[match.winner] || match.winnerName === TRANSLATIONS.zh[match.winner]) {
+    return getText(match.winner);
+  }
+
+  if (match.winnerName === TRANSLATIONS.en.computer || match.winnerName === TRANSLATIONS.zh.computer) {
+    return getText("computer");
+  }
+
+  return match.winnerName;
+}
+
 function formatRecentMatchTime(match) {
-  return typeof match.elapsedSeconds === "number" ? ` in ${formatElapsedTime(match.elapsedSeconds * 1000)}` : "";
+  return typeof match.elapsedSeconds === "number" ? getText("timeSuffix")(formatElapsedTime(match.elapsedSeconds * 1000)) : "";
 }
 
 function formatCompletedAt(completedAt) {
   const date = new Date(completedAt);
 
   if (Number.isNaN(date.getTime())) {
-    return "Saved recently";
+    return getText("savedRecently");
   }
 
-  return `Saved ${date.toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  })}`;
+  return getText("savedAt")(date);
 }
 
 function readHighContrastPreference() {
@@ -347,6 +553,23 @@ function readHighContrastPreference() {
     return window.localStorage.getItem(CONTRAST_STORAGE_KEY) === "true";
   } catch {
     return false;
+  }
+}
+
+function readLanguagePreference() {
+  try {
+    const storedLanguage = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    return Object.hasOwn(TRANSLATIONS, storedLanguage) ? storedLanguage : DEFAULT_LANGUAGE;
+  } catch {
+    return DEFAULT_LANGUAGE;
+  }
+}
+
+function writeLanguagePreference(nextLanguage) {
+  try {
+    window.localStorage.setItem(LANGUAGE_STORAGE_KEY, nextLanguage);
+  } catch {
+    // Some privacy modes disable localStorage. Language switching should still work.
   }
 }
 
@@ -386,7 +609,7 @@ function formatElapsedTime(milliseconds) {
 
 function renderTimerStatus() {
   timerToggle.checked = timerEnabled;
-  elapsedTimeLabel.textContent = timerEnabled ? formatElapsedTime(getElapsedTimeMs()) : "Off";
+  elapsedTimeLabel.textContent = timerEnabled ? formatElapsedTime(getElapsedTimeMs()) : getText("off");
 }
 
 function startTimerIfNeeded() {
@@ -439,6 +662,12 @@ function handleTimerChange() {
   }
 }
 
+function handleLanguageChange() {
+  language = Object.hasOwn(TRANSLATIONS, languageSelect.value) ? languageSelect.value : DEFAULT_LANGUAGE;
+  writeLanguagePreference(language);
+  render();
+}
+
 boardElement.addEventListener("click", (event) => {
   const cell = event.target.closest(".cell");
 
@@ -487,6 +716,7 @@ resetButton.addEventListener("click", handleReset);
 clearRecentButton.addEventListener("click", clearRecentMatch);
 contrastToggle.addEventListener("change", handleContrastChange);
 timerToggle.addEventListener("change", handleTimerChange);
+languageSelect.addEventListener("change", handleLanguageChange);
 blackNameInput.addEventListener("input", render);
 whiteNameInput.addEventListener("input", render);
 difficultySelect.addEventListener("change", render);

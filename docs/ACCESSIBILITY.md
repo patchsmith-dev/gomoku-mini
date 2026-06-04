@@ -15,6 +15,7 @@ Accessibility is part of the project roadmap, not an afterthought.
 - Wins and draws are announced through a polite live region
 - A local high-contrast display toggle is available in the setup panel
 - A local elapsed timer is available without live announcements, so screen readers are not interrupted every second
+- English and Chinese interface labels update visible text and key ARIA labels together
 
 ## Planned Improvements
 

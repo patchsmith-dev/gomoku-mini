@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.3.4 - 2026-06-04
+
+- Added a saved language selector for English and Chinese
+- Localized visible game controls, status text, move history, recent match summaries, and key ARIA labels
+- Updated README, roadmap, and accessibility notes after adding bilingual interface support
+
 ## 0.3.3 - 2026-06-04
 
 - Added selectable computer difficulty with Easy and Normal modes

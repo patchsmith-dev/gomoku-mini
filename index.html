@@ -11,12 +11,12 @@
       <section class="game-surface" aria-labelledby="game-title">
         <div class="top-bar">
           <div>
-            <p class="eyebrow">Open source board game</p>
+            <p class="eyebrow" data-i18n="eyebrow">Open source board game</p>
             <h1 id="game-title">Gomoku Mini</h1>
           </div>
-          <div class="actions" aria-label="Game controls">
-            <button id="undo-button" type="button">Undo</button>
-            <button id="reset-button" type="button">Reset</button>
+          <div class="actions" aria-label="Game controls" data-i18n-aria="gameControls">
+            <button id="undo-button" type="button" data-i18n="undo">Undo</button>
+            <button id="reset-button" type="button" data-i18n="reset">Reset</button>
           </div>
         </div>
 
@@ -27,60 +27,68 @@
               class="board"
               role="grid"
               aria-label="Gomoku board"
+              data-i18n-aria="board"
               aria-rowcount="15"
               aria-colcount="15"
             ></div>
           </div>
 
-          <aside class="side-panel" aria-label="Game status">
-            <div class="setup-panel" aria-label="Game setup">
+          <aside class="side-panel" aria-label="Game status" data-i18n-aria="gameStatus">
+            <div class="setup-panel" aria-label="Game setup" data-i18n-aria="gameSetup">
+              <label class="language-field">
+                <span class="label" data-i18n="language">Language</span>
+                <select id="language-select" aria-label="Language" data-i18n-aria="language">
+                  <option value="en">English</option>
+                  <option value="zh">中文</option>
+                </select>
+              </label>
               <div class="mode-row">
-                <span class="label">Mode</span>
-                <div class="segmented-control" role="radiogroup" aria-label="Game mode">
+                <span class="label" data-i18n="mode">Mode</span>
+                <div class="segmented-control" role="radiogroup" aria-label="Game mode" data-i18n-aria="gameMode">
                   <label>
                     <input type="radio" name="game-mode" value="two-player" checked />
-                    <span>Two Player</span>
+                    <span data-i18n="twoPlayer">Two Player</span>
                   </label>
                   <label>
                     <input type="radio" name="game-mode" value="computer" />
-                    <span>Computer</span>
+                    <span data-i18n="computer">Computer</span>
                   </label>
                 </div>
               </div>
               <label class="name-field">
-                <span class="label">Black</span>
+                <span class="label" data-i18n="black">Black</span>
                 <input id="black-name-input" type="text" maxlength="24" placeholder="Black" autocomplete="off" />
               </label>
               <label class="name-field">
-                <span class="label">White</span>
+                <span class="label" data-i18n="white">White</span>
                 <input id="white-name-input" type="text" maxlength="24" placeholder="White" autocomplete="off" />
               </label>
               <label class="difficulty-field">
-                <span class="label">Difficulty</span>
+                <span class="label" data-i18n="difficulty">Difficulty</span>
                 <select id="difficulty-select">
-                  <option value="normal">Normal</option>
-                  <option value="easy">Easy</option>
+                  <option value="normal" data-i18n="normal">Normal</option>
+                  <option value="easy" data-i18n="easy">Easy</option>
                 </select>
               </label>
               <label class="contrast-toggle">
                 <input id="contrast-toggle" type="checkbox" />
-                <span>High contrast</span>
+                <span data-i18n="highContrast">High contrast</span>
               </label>
               <label class="timer-toggle">
                 <input id="timer-toggle" type="checkbox" />
-                <span>Timer</span>
+                <span data-i18n="timer">Timer</span>
               </label>
             </div>
             <div class="status-block">
-              <span class="label">Turn</span>
+              <span class="label" data-i18n="turn">Turn</span>
               <strong id="turn-label">Black</strong>
             </div>
             <div class="status-block">
-              <span class="label">Result</span>
+              <span class="label" data-i18n="result">Result</span>
               <strong id="result-label">Playing</strong>
             </div>
             <div class="status-block">
-              <span class="label">Time</span>
+              <span class="label" data-i18n="time">Time</span>
               <strong id="elapsed-time-label">Off</strong>
             </div>
             <p id="status-announcer" class="visually-hidden" aria-live="polite" aria-atomic="true"></p>
@@ -98,18 +106,18 @@
             </div>
             <div class="history-box">
               <div class="history-head">
-                <span class="label">Moves</span>
+                <span class="label" data-i18n="moves">Moves</span>
                 <strong id="move-count">0</strong>
               </div>
-              <ol id="move-history" aria-label="Move history"></ol>
+              <ol id="move-history" aria-label="Move history" data-i18n-aria="moveHistory"></ol>
             </div>
             <div class="recent-match">
               <div>
-                <span class="label">Recent Match</span>
+                <span class="label" data-i18n="recentMatch">Recent Match</span>
                 <strong id="recent-match-label">No completed match yet</strong>
                 <time id="recent-match-time" dateTime=""></time>
               </div>
-              <button id="clear-recent-button" type="button">Clear</button>
+              <button id="clear-recent-button" type="button" data-i18n="clear">Clear</button>
             </div>
           </aside>
         </div>

@@ -9,4 +9,4 @@
 - Improve the computer opponent with stronger tactical scoring
 - Add online multiplayer prototype
 - Add theme customization
-- Add internationalization support
+- Add more interface languages

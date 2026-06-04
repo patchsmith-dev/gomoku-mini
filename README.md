@@ -12,6 +12,7 @@ Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in 
 - Local two-player mode
 - Optional local computer opponent mode
 - Selectable computer difficulty
+- English and Chinese interface option
 - Custom player names
 - Black and white turn tracking
 - Five-in-a-row win detection
@@ -95,6 +96,8 @@ Use the mode control to switch between local two-player play and a simple local 
 
 Use the timer control to track elapsed match time. The timer starts on the first move, stops when the match ends, and resets with the board.
 
+Use the language control to switch the interface between English and Chinese. The preference is saved locally in the browser.
+
 Keyboard controls:
 
 - Arrow keys move focus across the board
@@ -110,7 +113,6 @@ The rule engine lives in `src/engine.js` and is covered by Node.js tests in `tes
 Useful areas for contributors:
 
 - Improve mobile layout and touch behavior
-- Add translations
 - Add visible focus checks
 
 ## Contributing
