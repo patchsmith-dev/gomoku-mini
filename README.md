@@ -17,6 +17,7 @@ Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in 
 - Undo and reset controls
 - Move history panel
 - Recent completed match summary
+- Optional elapsed game timer
 - Draw detection
 - Tested game engine
 - Keyboard board navigation
@@ -91,6 +92,8 @@ Black moves first. Players take turns placing stones on empty intersections. The
 
 Use the mode control to switch between local two-player play and a simple local computer opponent. The computer currently plays white and uses a small heuristic: win when possible, block an immediate threat, then choose a nearby open cell.
 
+Use the timer control to track elapsed match time. The timer starts on the first move, stops when the match ends, and resets with the board.
+
 Keyboard controls:
 
 - Arrow keys move focus across the board
@@ -106,7 +109,6 @@ The rule engine lives in `src/engine.js` and is covered by Node.js tests in `tes
 Useful areas for contributors:
 
 - Improve mobile layout and touch behavior
-- Add optional timer mode
 - Improve computer opponent difficulty
 - Add translations
 - Add visible focus checks

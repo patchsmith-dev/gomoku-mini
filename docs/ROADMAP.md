@@ -7,7 +7,6 @@
 
 ## Later
 
-- Add timer mode
 - Add online multiplayer prototype
 - Add theme customization
 - Add internationalization support

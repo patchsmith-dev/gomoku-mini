@@ -341,7 +341,8 @@ body.high-contrast .cell.win {
   outline-offset: 2px;
 }
 
-.contrast-toggle {
+.contrast-toggle,
+.timer-toggle {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -349,10 +350,15 @@ body.high-contrast .cell.win {
   font-weight: 800;
 }
 
-.contrast-toggle input {
+.contrast-toggle input,
+.timer-toggle input {
   width: 20px;
   height: 20px;
   accent-color: var(--accent);
+}
+
+#elapsed-time-label {
+  font-variant-numeric: tabular-nums;
 }
 
 .score-grid {

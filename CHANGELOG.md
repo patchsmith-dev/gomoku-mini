@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.3.2 - 2026-06-04
+
+- Added an optional elapsed game timer that starts on the first move and stops when the match ends
+- Included timed match duration in the recent completed match summary
+- Updated roadmap and accessibility notes after completing timer mode
+
 ## 0.3.1 - 2026-06-03
 
 - Added a local high-contrast display toggle, including board-edge contrast

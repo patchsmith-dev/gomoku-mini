@@ -17,6 +17,8 @@ const recentMatchLabel = document.querySelector("#recent-match-label");
 const recentMatchTime = document.querySelector("#recent-match-time");
 const clearRecentButton = document.querySelector("#clear-recent-button");
 const contrastToggle = document.querySelector("#contrast-toggle");
+const timerToggle = document.querySelector("#timer-toggle");
+const elapsedTimeLabel = document.querySelector("#elapsed-time-label");
 const undoButton = document.querySelector("#undo-button");
 const resetButton = document.querySelector("#reset-button");
 const MATCH_STORAGE_KEY = "gomoku-mini:recent-match";
@@ -28,6 +30,10 @@ let gameMode = "two-player";
 let focusPosition = { row: 0, col: 0 };
 let lastAnnouncement = "";
 let highContrastEnabled = readHighContrastPreference();
+let timerEnabled = false;
+let timerStartedAt = null;
+let timerElapsedMs = 0;
+let timerIntervalId = null;
 
 function renderBoard() {
   boardElement.innerHTML = "";
@@ -82,6 +88,7 @@ function renderStatus() {
 function render() {
   normalizeFocusPosition();
   renderContrastPreference();
+  renderTimerStatus();
   renderBoard();
   renderStatus();
   renderRecentMatch();
@@ -122,12 +129,17 @@ function handleUndo() {
     }
   }
 
+  if (timerEnabled && game.moves.length > 0 && !game.winner && !game.isDraw) {
+    startTimerIfNeeded();
+  }
+
   render();
 }
 
 function handleReset() {
   resetGame(game);
   focusPosition = { row: 0, col: 0 };
+  resetTimer();
   clearAnnouncement();
   render();
 }
@@ -170,7 +182,9 @@ function playFocusedCell() {
   const result = placeStone(game, focusPosition.row, focusPosition.col);
 
   if (result.ok) {
+    startTimerIfNeeded();
     saveCompletedMatch();
+    stopTimerIfGameComplete();
     render();
     focusCell(result.move.row, result.move.col);
     announceGameResult();
@@ -195,7 +209,9 @@ function playComputerTurn() {
   const result = placeStone(game, move.row, move.col);
 
   if (result.ok) {
+    startTimerIfNeeded();
     saveCompletedMatch();
+    stopTimerIfGameComplete();
     render();
     focusCell(result.move.row, result.move.col);
     announceGameResult();
@@ -233,6 +249,7 @@ function saveCompletedMatch() {
 
   writeRecentMatch({
     completedAt: new Date().toISOString(),
+    elapsedSeconds: timerEnabled ? Math.floor(getElapsedTimeMs() / 1000) : null,
     moves: game.moves.length,
     result: getResultLabel(),
   });
@@ -249,6 +266,10 @@ function readRecentMatch() {
     const match = JSON.parse(storedMatch);
 
     if (typeof match.result !== "string" || typeof match.moves !== "number" || typeof match.completedAt !== "string") {
+      return null;
+    }
+
+    if (match.elapsedSeconds !== undefined && match.elapsedSeconds !== null && typeof match.elapsedSeconds !== "number") {
       return null;
     }
 
@@ -287,10 +308,14 @@ function renderRecentMatch() {
     return;
   }
 
-  recentMatchLabel.textContent = `${match.result} after ${match.moves} moves`;
+  recentMatchLabel.textContent = `${match.result} after ${match.moves} moves${formatRecentMatchTime(match)}`;
   recentMatchTime.textContent = formatCompletedAt(match.completedAt);
   recentMatchTime.dateTime = match.completedAt;
   clearRecentButton.disabled = false;
+}
+
+function formatRecentMatchTime(match) {
+  return typeof match.elapsedSeconds === "number" ? ` in ${formatElapsedTime(match.elapsedSeconds * 1000)}` : "";
 }
 
 function formatCompletedAt(completedAt) {
@@ -333,6 +358,76 @@ function handleContrastChange() {
   highContrastEnabled = contrastToggle.checked;
   writeHighContrastPreference(highContrastEnabled);
   renderContrastPreference();
+}
+
+function getElapsedTimeMs() {
+  return timerElapsedMs + (timerStartedAt ? Date.now() - timerStartedAt : 0);
+}
+
+function formatElapsedTime(milliseconds) {
+  const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const paddedMinutes = String(minutes).padStart(2, "0");
+  const paddedSeconds = String(seconds).padStart(2, "0");
+
+  return hours > 0 ? `${hours}:${paddedMinutes}:${paddedSeconds}` : `${paddedMinutes}:${paddedSeconds}`;
+}
+
+function renderTimerStatus() {
+  timerToggle.checked = timerEnabled;
+  elapsedTimeLabel.textContent = timerEnabled ? formatElapsedTime(getElapsedTimeMs()) : "Off";
+}
+
+function startTimerIfNeeded() {
+  if (!timerEnabled || timerStartedAt || game.winner || game.isDraw) {
+    return;
+  }
+
+  timerStartedAt = Date.now();
+  scheduleTimerTick();
+}
+
+function scheduleTimerTick() {
+  window.clearInterval(timerIntervalId);
+  timerIntervalId = null;
+
+  if (timerEnabled && timerStartedAt && !game.winner && !game.isDraw) {
+    timerIntervalId = window.setInterval(renderTimerStatus, 1000);
+  }
+}
+
+function stopTimer() {
+  if (timerStartedAt) {
+    timerElapsedMs += Date.now() - timerStartedAt;
+    timerStartedAt = null;
+  }
+
+  window.clearInterval(timerIntervalId);
+  timerIntervalId = null;
+  renderTimerStatus();
+}
+
+function stopTimerIfGameComplete() {
+  if (game.winner || game.isDraw) {
+    stopTimer();
+  }
+}
+
+function resetTimer() {
+  stopTimer();
+  timerElapsedMs = 0;
+  renderTimerStatus();
+}
+
+function handleTimerChange() {
+  timerEnabled = timerToggle.checked;
+  resetTimer();
+
+  if (timerEnabled && game.moves.length > 0 && !game.winner && !game.isDraw) {
+    startTimerIfNeeded();
+  }
 }
 
 boardElement.addEventListener("click", (event) => {
@@ -382,6 +477,7 @@ undoButton.addEventListener("click", handleUndo);
 resetButton.addEventListener("click", handleReset);
 clearRecentButton.addEventListener("click", clearRecentMatch);
 contrastToggle.addEventListener("change", handleContrastChange);
+timerToggle.addEventListener("change", handleTimerChange);
 blackNameInput.addEventListener("input", render);
 whiteNameInput.addEventListener("input", render);
 gameModeInputs.forEach((input) => input.addEventListener("change", handleModeChange));
