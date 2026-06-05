@@ -17,3 +17,10 @@ test("last move labels are localized", () => {
   assert.match(mainSource, /aria-current", "step"/);
   assert.match(mainSource, /getCellLabel\(row, col, value, isLastMove\)/);
 });
+
+test("recent match copying uses localized summaries", () => {
+  assert.match(mainSource, /async function copyRecentMatch\(\)/);
+  assert.match(mainSource, /getRecentMatchSummary\(match\)/);
+  assert.match(mainSource, /copiedRecentMatch/);
+  assert.match(mainSource, /copyRecentMatchFailed/);
+});

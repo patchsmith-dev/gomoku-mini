@@ -18,6 +18,7 @@ const moveHistory = document.querySelector("#move-history");
 const statusAnnouncer = document.querySelector("#status-announcer");
 const recentMatchLabel = document.querySelector("#recent-match-label");
 const recentMatchTime = document.querySelector("#recent-match-time");
+const copyRecentButton = document.querySelector("#copy-recent-button");
 const clearRecentButton = document.querySelector("#clear-recent-button");
 const contrastToggle = document.querySelector("#contrast-toggle");
 const timerToggle = document.querySelector("#timer-toggle");
@@ -56,6 +57,7 @@ const TRANSLATIONS = {
     recentMatch: "Recent Match",
     moveHistory: "Move history",
     noCompletedMatch: "No completed match yet",
+    copy: "Copy",
     clear: "Clear",
     undo: "Undo",
     reset: "Reset",
@@ -97,6 +99,8 @@ const TRANSLATIONS = {
       return ` in ${timeText}`;
     },
     savedRecently: "Saved recently",
+    copiedRecentMatch: "Recent match copied.",
+    copyRecentMatchFailed: "Could not copy the recent match.",
     savedAt(date) {
       return `Saved ${date.toLocaleString(undefined, {
         month: "short",
@@ -132,6 +136,7 @@ const TRANSLATIONS = {
     recentMatch: "最近对局",
     moveHistory: "走子记录",
     noCompletedMatch: "暂无已完成对局",
+    copy: "复制",
     clear: "清除",
     undo: "悔棋",
     reset: "重置",
@@ -173,6 +178,8 @@ const TRANSLATIONS = {
       return `，用时 ${timeText}`;
     },
     savedRecently: "刚刚保存",
+    copiedRecentMatch: "已复制最近对局。",
+    copyRecentMatchFailed: "无法复制最近对局。",
     savedAt(date) {
       return `已保存 ${date.toLocaleString("zh-CN", {
         month: "short",
@@ -518,14 +525,20 @@ function renderRecentMatch() {
     recentMatchLabel.textContent = getText("noCompletedMatch");
     recentMatchTime.textContent = "";
     recentMatchTime.dateTime = "";
+    copyRecentButton.disabled = true;
     clearRecentButton.disabled = true;
     return;
   }
 
-  recentMatchLabel.textContent = getText("recentSummary")(getRecentMatchResult(match), match.moves, formatRecentMatchTime(match));
+  recentMatchLabel.textContent = getRecentMatchSummary(match);
   recentMatchTime.textContent = formatCompletedAt(match.completedAt);
   recentMatchTime.dateTime = match.completedAt;
+  copyRecentButton.disabled = false;
   clearRecentButton.disabled = false;
+}
+
+function getRecentMatchSummary(match) {
+  return getText("recentSummary")(getRecentMatchResult(match), match.moves, formatRecentMatchTime(match));
 }
 
 function getRecentMatchResult(match) {
@@ -564,6 +577,23 @@ function formatCompletedAt(completedAt) {
   }
 
   return getText("savedAt")(date);
+}
+
+async function copyRecentMatch() {
+  const match = readRecentMatch();
+
+  if (!match || !navigator.clipboard?.writeText) {
+    statusAnnouncer.textContent = getText("copyRecentMatchFailed");
+    return;
+  }
+
+  try {
+    const summaryParts = [getRecentMatchSummary(match), formatCompletedAt(match.completedAt)].filter(Boolean);
+    await navigator.clipboard.writeText(summaryParts.join(" - "));
+    statusAnnouncer.textContent = getText("copiedRecentMatch");
+  } catch {
+    statusAnnouncer.textContent = getText("copyRecentMatchFailed");
+  }
 }
 
 function readHighContrastPreference() {
@@ -731,6 +761,7 @@ boardElement.addEventListener("keydown", (event) => {
 
 undoButton.addEventListener("click", handleUndo);
 resetButton.addEventListener("click", handleReset);
+copyRecentButton.addEventListener("click", copyRecentMatch);
 clearRecentButton.addEventListener("click", clearRecentMatch);
 contrastToggle.addEventListener("change", handleContrastChange);
 timerToggle.addEventListener("change", handleTimerChange);

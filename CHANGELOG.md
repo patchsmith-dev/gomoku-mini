@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.3.6 - 2026-06-05
+
+- Added a copy button for the recent match summary
+- Announced copy success and failure through the existing live region
+- Added regression coverage for localized recent-match copying
+
 ## 0.3.5 - 2026-06-05
 
 - Added a visual and screen-reader-visible marker for the latest move

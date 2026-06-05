@@ -20,6 +20,7 @@ Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in 
 - Undo and reset controls
 - Move history panel
 - Recent completed match summary
+- Copyable recent match summary
 - Optional elapsed game timer
 - Draw detection
 - Tested game engine

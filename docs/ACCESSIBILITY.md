@@ -17,6 +17,7 @@ Accessibility is part of the project roadmap, not an afterthought.
 - A local elapsed timer is available without live announcements, so screen readers are not interrupted every second
 - English and Chinese interface labels update visible text and key ARIA labels together
 - The latest played stone is marked visually and exposed with `aria-current="step"`
+- Copying the recent-match summary reports success or failure through the polite live region
 
 ## Planned Improvements
 
