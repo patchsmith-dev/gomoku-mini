@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.3.9 - 2026-06-06
+
+- Added Hard and Extreme computer difficulty levels
+- Added scored line selection for Hard difficulty
+- Added stronger defensive weighting and response estimation for Extreme difficulty
+- Updated difficulty tests, README, roadmap, and package metadata
+
 ## 0.3.8 - 2026-06-05
 
 - Added reduced-motion preference support for stone placement transitions

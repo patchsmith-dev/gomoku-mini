@@ -24,3 +24,10 @@ test("recent match copying uses localized summaries", () => {
   assert.match(mainSource, /copiedRecentMatch/);
   assert.match(mainSource, /copyRecentMatchFailed/);
 });
+
+test("advanced difficulty labels are localized", () => {
+  assert.match(mainSource, /hard: "Hard"/);
+  assert.match(mainSource, /extreme: "Extreme"/);
+  assert.match(mainSource, /hard: "困难"/);
+  assert.match(mainSource, /extreme: "极难"/);
+});

@@ -11,7 +11,7 @@ Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in 
 - 15 x 15 classic Gomoku board
 - Local two-player mode
 - Optional local computer opponent mode
-- Selectable computer difficulty
+- Four selectable computer difficulty levels
 - English and Chinese interface option
 - Custom player names
 - Black and white turn tracking
@@ -97,7 +97,7 @@ npm run check
 
 Black moves first. Players take turns placing stones on empty intersections. The first player to connect five or more stones horizontally, vertically, or diagonally wins.
 
-Use the mode control to switch between local two-player play and a simple local computer opponent. The computer currently plays white. Normal difficulty uses a small heuristic: win when possible, block an immediate threat, then choose a nearby open cell. Easy difficulty skips tactical search and only chooses a nearby open cell.
+Use the mode control to switch between local two-player play and a simple local computer opponent. The computer currently plays white. Easy chooses a nearby open cell, Normal wins or blocks immediate threats, Hard scores line extensions and pressure, and Extreme adds stronger defense with a one-step response estimate.
 
 Use the timer control to track elapsed match time. The timer starts on the first move, stops when the match ends, and resets with the board.
 

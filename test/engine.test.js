@@ -9,6 +9,11 @@ function playMoves(game, moves) {
   }
 }
 
+function setStone(game, row, col, player) {
+  game.board[row][col] = player;
+  game.moves.push({ row, col, player });
+}
+
 test("creates a 15 x 15 game by default", () => {
   const game = engine.createGame();
 
@@ -188,6 +193,10 @@ test("computer move opens near the board center", () => {
   assert.deepEqual(engine.chooseComputerMove(game, "white"), { row: 7, col: 7 });
 });
 
+test("computer difficulty list includes hard and extreme", () => {
+  assert.deepEqual(Object.keys(engine.COMPUTER_DIFFICULTIES).sort(), ["easy", "extreme", "hard", "normal"]);
+});
+
 test("computer move takes an immediate win", () => {
   const game = engine.createGame();
 
@@ -214,6 +223,27 @@ test("easy computer difficulty skips tactical search", () => {
 
   assert.deepEqual(engine.chooseComputerMove(game, "white", "normal"), { row: 4, col: 3 });
   assert.deepEqual(engine.chooseComputerMove(game, "white", "easy"), { row: 5, col: 7 });
+});
+
+test("hard computer difficulty extends the strongest line", () => {
+  const game = engine.createGame();
+
+  setStone(game, 7, 7, "white");
+  setStone(game, 7, 8, "white");
+  setStone(game, 10, 10, "black");
+
+  assert.deepEqual(engine.chooseComputerMove(game, "white", "hard"), { row: 7, col: 6 });
+});
+
+test("extreme computer difficulty blocks open-ended three threats", () => {
+  const game = engine.createGame();
+
+  setStone(game, 7, 6, "black");
+  setStone(game, 7, 7, "black");
+  setStone(game, 7, 8, "black");
+  setStone(game, 4, 4, "white");
+
+  assert.deepEqual(engine.chooseComputerMove(game, "white", "extreme"), { row: 7, col: 5 });
 });
 
 test("computer move blocks an immediate opponent win", () => {
