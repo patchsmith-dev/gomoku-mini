@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.3.5 - 2026-06-05
 
+- Added a visual and screen-reader-visible marker for the latest move
 - Fixed the empty recent-match state so it follows the selected interface language
 - Added regression coverage for recent-match localization
 

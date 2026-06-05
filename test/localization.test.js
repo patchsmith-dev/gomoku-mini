@@ -11,3 +11,9 @@ test("recent match empty state uses the translation table", () => {
   assert.equal(hardCodedEmptyStateMatches.length, 1);
   assert.match(mainSource, /recentMatchLabel\.textContent = getText\("noCompletedMatch"\);/);
 });
+
+test("last move labels are localized", () => {
+  assert.match(mainSource, /lastMoveStone\(stoneLabel\)/);
+  assert.match(mainSource, /aria-current", "step"/);
+  assert.match(mainSource, /getCellLabel\(row, col, value, isLastMove\)/);
+});

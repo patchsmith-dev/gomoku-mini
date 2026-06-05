@@ -15,6 +15,7 @@ Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in 
 - English and Chinese interface option
 - Custom player names
 - Black and white turn tracking
+- Last-move marker
 - Five-in-a-row win detection
 - Undo and reset controls
 - Move history panel
@@ -56,7 +57,8 @@ gomoku-mini/
 |   |-- main.js
 |   `-- styles.css
 |-- test/
-|   `-- engine.test.js
+|   |-- engine.test.js
+|   `-- localization.test.js
 |-- CHANGELOG.md
 |-- CONTRIBUTING.md
 |-- LICENSE
@@ -109,6 +111,7 @@ Keyboard controls:
 This project intentionally uses plain HTML, CSS, and JavaScript.
 
 The rule engine lives in `src/engine.js` and is covered by Node.js tests in `test/engine.test.js`.
+Browser-facing localization and UI affordances are covered by focused source regression tests.
 
 Useful areas for contributors:
 

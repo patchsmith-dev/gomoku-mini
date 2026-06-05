@@ -75,6 +75,9 @@ const TRANSLATIONS = {
     stoneAt(playerName, position) {
       return `${playerName} stone at ${position}`;
     },
+    lastMoveStone(stoneLabel) {
+      return `${stoneLabel}, last move`;
+    },
     moveEntry(playerName, row, col) {
       return `${playerName}: ${row}, ${col}`;
     },
@@ -148,6 +151,9 @@ const TRANSLATIONS = {
     stoneAt(playerName, position) {
       return `${playerName}棋子，${position}`;
     },
+    lastMoveStone(stoneLabel) {
+      return `${stoneLabel}，最后一手`;
+    },
     moveEntry(playerName, row, col) {
       return `${playerName}：${row}，${col}`;
     },
@@ -191,31 +197,43 @@ let timerIntervalId = null;
 
 function renderBoard() {
   boardElement.innerHTML = "";
+  const lastMove = game.moves[game.moves.length - 1];
 
   for (let row = 0; row < BOARD_SIZE; row += 1) {
     for (let col = 0; col < BOARD_SIZE; col += 1) {
       const cell = document.createElement("button");
       const value = game.board[row][col];
       const isWinningCell = game.winningCells.some(([winRow, winCol]) => winRow === row && winCol === col);
+      const isLastMove = Boolean(lastMove && lastMove.row === row && lastMove.col === col);
 
       cell.type = "button";
-      cell.className = ["cell", value, isWinningCell ? "win" : ""].filter(Boolean).join(" ");
+      cell.className = ["cell", value, isWinningCell ? "win" : "", isLastMove ? "last-move" : ""]
+        .filter(Boolean)
+        .join(" ");
       cell.dataset.row = row;
       cell.dataset.col = col;
       cell.setAttribute("role", "gridcell");
       cell.setAttribute("aria-rowindex", String(row + 1));
       cell.setAttribute("aria-colindex", String(col + 1));
-      cell.setAttribute("aria-label", getCellLabel(row, col, value));
+      cell.setAttribute("aria-label", getCellLabel(row, col, value, isLastMove));
       cell.setAttribute("aria-disabled", String(Boolean(value || game.winner || game.isDraw)));
+      if (isLastMove) {
+        cell.setAttribute("aria-current", "step");
+      }
       cell.tabIndex = isFocusedCell(row, col) ? 0 : -1;
       boardElement.appendChild(cell);
     }
   }
 }
 
-function getCellLabel(row, col, value) {
+function getCellLabel(row, col, value, isLastMove = false) {
   const position = getText("cellPosition")(row + 1, col + 1);
-  return value ? getText("stoneAt")(getPlayerName(value), position) : getText("emptyCellAt")(position);
+  if (!value) {
+    return getText("emptyCellAt")(position);
+  }
+
+  const stoneLabel = getText("stoneAt")(getPlayerName(value), position);
+  return isLastMove ? getText("lastMoveStone")(stoneLabel) : stoneLabel;
 }
 
 function renderStatus() {
