@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.3.8 - 2026-06-05
+
+- Added reduced-motion preference support for stone placement transitions
+- Added regression coverage for reduced-motion styling
+- Updated roadmap and accessibility notes after completing reduced-motion support
+
 ## 0.3.7 - 2026-06-05
 
 - Added CI-backed accessibility regression checks for visible focus styling

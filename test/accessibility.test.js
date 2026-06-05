@@ -25,3 +25,8 @@ test("latest move is exposed as the current step", () => {
   assert.match(mainSource, /cell\.setAttribute\("aria-current", "step"\)/);
   assert.match(mainSource, /lastMoveStone/);
 });
+
+test("reduced motion preference disables stone transition", () => {
+  assert.match(styleSource, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(styleSource, /\.cell::after\s*{\s*transition: none;/);
+});

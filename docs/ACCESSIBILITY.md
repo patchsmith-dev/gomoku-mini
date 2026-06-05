@@ -18,10 +18,11 @@ Accessibility is part of the project roadmap, not an afterthought.
 - English and Chinese interface labels update visible text and key ARIA labels together
 - The latest played stone is marked visually and exposed with `aria-current="step"`
 - Copying the recent-match summary reports success or failure through the polite live region
+- Stone placement transitions are disabled when the user prefers reduced motion
 
 ## Planned Improvements
 
-- Add reduced-motion preferences if animations are introduced
+- Keep accessibility checks aligned with new controls and visual states
 
 ## Contribution Ideas
 

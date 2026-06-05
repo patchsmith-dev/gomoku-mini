@@ -2,7 +2,7 @@
 
 ## Near Term
 
-- Add reduced-motion preferences if animations are expanded
+- Improve mobile layout and touch behavior
 
 ## Later
 

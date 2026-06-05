@@ -496,6 +496,12 @@ body.high-contrast .cell.win {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .cell::after {
+    transition: none;
+  }
+}
+
 @media (max-width: 900px) {
   .play-layout {
     grid-template-columns: 1fr;

@@ -27,6 +27,7 @@ Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in 
 - Keyboard board navigation
 - Screen-reader result announcements
 - Optional high-contrast display mode
+- Reduced-motion preference support
 - No build step and no runtime dependencies
 
 ## Demo
