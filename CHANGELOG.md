@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.3.7 - 2026-06-05
+
+- Added CI-backed accessibility regression checks for visible focus styling
+- Added source checks for the result live region and latest-move current-step markup
+- Updated roadmap and accessibility docs after completing focus visibility coverage
+
 ## 0.3.6 - 2026-06-05
 
 - Added a copy button for the recent match summary

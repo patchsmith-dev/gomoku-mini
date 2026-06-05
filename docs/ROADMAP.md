@@ -2,7 +2,7 @@
 
 ## Near Term
 
-- Add visible focus testing to the CI checklist
+- Add reduced-motion preferences if animations are expanded
 
 ## Later
 

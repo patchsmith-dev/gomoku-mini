@@ -21,7 +21,6 @@ Accessibility is part of the project roadmap, not an afterthought.
 
 ## Planned Improvements
 
-- Add visible focus testing to the CI checklist
 - Add reduced-motion preferences if animations are introduced
 
 ## Contribution Ideas

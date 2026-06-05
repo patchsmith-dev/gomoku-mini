@@ -58,6 +58,7 @@ gomoku-mini/
 |   |-- main.js
 |   `-- styles.css
 |-- test/
+|   |-- accessibility.test.js
 |   |-- engine.test.js
 |   `-- localization.test.js
 |-- CHANGELOG.md
@@ -112,12 +113,12 @@ Keyboard controls:
 This project intentionally uses plain HTML, CSS, and JavaScript.
 
 The rule engine lives in `src/engine.js` and is covered by Node.js tests in `test/engine.test.js`.
-Browser-facing localization and UI affordances are covered by focused source regression tests.
+Browser-facing localization, focus visibility, and UI affordances are covered by focused source regression tests.
 
 Useful areas for contributors:
 
 - Improve mobile layout and touch behavior
-- Add visible focus checks
+- Add reduced-motion preferences if animations are expanded
 
 ## Contributing
 
