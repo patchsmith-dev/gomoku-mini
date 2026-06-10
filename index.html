@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gomoku Mini</title>
-    <link rel="stylesheet" href="src/styles.css" />
+    <link rel="stylesheet" href="src/styles.css?v=0.4.0" />
   </head>
   <body>
     <main class="app-shell">
@@ -15,6 +15,7 @@
             <h1 id="game-title">Gomoku Mini</h1>
           </div>
           <div class="actions" aria-label="Game controls" data-i18n-aria="gameControls">
+            <button id="hint-button" type="button" data-i18n="hint">Hint</button>
             <button id="undo-button" type="button" data-i18n="undo">Undo</button>
             <button id="reset-button" type="button" data-i18n="reset">Reset</button>
           </div>
@@ -22,15 +23,37 @@
 
         <div class="play-layout">
           <div class="board-wrap">
-            <div
-              id="board"
-              class="board"
-              role="grid"
-              aria-label="Gomoku board"
-              data-i18n-aria="board"
-              aria-rowcount="15"
-              aria-colcount="15"
-            ></div>
+            <div class="board-frame">
+              <div class="coord-strip coord-strip-top" aria-hidden="true">
+                <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span
+                ><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span
+                ><span>O</span>
+              </div>
+              <div class="coord-strip coord-strip-left" aria-hidden="true">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span
+                ><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span
+                ><span>15</span>
+              </div>
+              <div
+                id="board"
+                class="board"
+                role="grid"
+                aria-label="Gomoku board"
+                data-i18n-aria="board"
+                aria-rowcount="15"
+                aria-colcount="15"
+              ></div>
+              <div class="coord-strip coord-strip-right" aria-hidden="true">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span
+                ><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span
+                ><span>15</span>
+              </div>
+              <div class="coord-strip coord-strip-bottom" aria-hidden="true">
+                <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span
+                ><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span
+                ><span>O</span>
+              </div>
+            </div>
           </div>
 
           <aside class="side-panel" aria-label="Game status" data-i18n-aria="gameStatus">
@@ -40,6 +63,14 @@
                 <select id="language-select" aria-label="Language" data-i18n-aria="language">
                   <option value="en">English</option>
                   <option value="zh">中文</option>
+                </select>
+              </label>
+              <label class="theme-field">
+                <span class="label" data-i18n="theme">Theme</span>
+                <select id="theme-select" aria-label="Theme" data-i18n-aria="theme">
+                  <option value="classic" data-i18n="classicTheme" selected>Classic</option>
+                  <option value="forest" data-i18n="forestTheme">Forest</option>
+                  <option value="midnight" data-i18n="midnightTheme">Midnight</option>
                 </select>
               </label>
               <div class="mode-row">
@@ -70,6 +101,13 @@
                   <option value="normal" data-i18n="normal" selected>Normal</option>
                   <option value="hard" data-i18n="hard">Hard</option>
                   <option value="extreme" data-i18n="extreme">Extreme</option>
+                </select>
+              </label>
+              <label class="computer-side-field">
+                <span class="label" data-i18n="computerSide">Computer side</span>
+                <select id="computer-side-select" aria-label="Computer side" data-i18n-aria="computerSide">
+                  <option value="white" data-i18n="white" selected>White</option>
+                  <option value="black" data-i18n="black">Black</option>
                 </select>
               </label>
               <label class="contrast-toggle">

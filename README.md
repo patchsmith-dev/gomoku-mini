@@ -12,10 +12,14 @@ Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in 
 - Local two-player mode
 - Optional local computer opponent mode
 - Four selectable computer difficulty levels
+- Selectable computer side for Black or White
+- Suggested move hints with board highlighting
 - English and Chinese interface option
+- Classic, Forest, and Midnight visual themes
 - Custom player names
 - Black and white turn tracking
 - Last-move marker
+- Visible board coordinates for rows and columns
 - Five-in-a-row win detection
 - Undo and reset controls
 - Move history panel
@@ -97,11 +101,17 @@ npm run check
 
 Black moves first. Players take turns placing stones on empty intersections. The first player to connect five or more stones horizontally, vertically, or diagonally wins.
 
-Use the mode control to switch between local two-player play and a simple local computer opponent. The computer currently plays white. Easy chooses a nearby open cell, Normal wins or blocks immediate threats, Hard scores line extensions and pressure, and Extreme adds stronger defense with a one-step response estimate.
+Use the row and column coordinates around the board to reference moves quickly. Columns are labeled A through O, and rows are labeled 1 through 15.
+
+Use the mode control to switch between local two-player play and a simple local computer opponent. In computer mode, the computer can play Black or White. If the computer plays Black, it opens the match automatically. Easy chooses a nearby open cell, Normal wins or blocks immediate threats, Hard scores line extensions and pressure, and Extreme adds stronger defense with a one-step response estimate.
+
+Use the Hint control to highlight a suggested move for the current player. Hints use the selected difficulty level and are announced through the status region for screen-reader users.
 
 Use the timer control to track elapsed match time. The timer starts on the first move, stops when the match ends, and resets with the board.
 
 Use the language control to switch the interface between English and Chinese. The preference is saved locally in the browser.
+
+Use the theme control to switch between Classic, Forest, and Midnight board styles. The preference is saved locally in the browser.
 
 Keyboard controls:
 
@@ -119,7 +129,7 @@ Browser-facing localization, focus visibility, and UI affordances are covered by
 Useful areas for contributors:
 
 - Improve mobile layout and touch behavior
-- Add reduced-motion preferences if animations are expanded
+- Add opening variety for the computer opponent
 
 ## Contributing
 

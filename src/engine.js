@@ -30,11 +30,11 @@
     return Array.from({ length: size }, () => Array(size).fill(null));
   }
 
-  function createGame(size = BOARD_SIZE) {
+  function createGame(size = BOARD_SIZE, startingPlayer = "black") {
     return {
       size,
       board: createEmptyBoard(size),
-      currentPlayer: "black",
+      currentPlayer: normalizePlayer(startingPlayer),
       moves: [],
       winner: null,
       winningCells: [],
@@ -88,8 +88,8 @@
     return { ok: true, move: lastMove };
   }
 
-  function resetGame(game) {
-    const nextGame = createGame(game.size);
+  function resetGame(game, startingPlayer = "black") {
+    const nextGame = createGame(game.size, startingPlayer);
     game.board = nextGame.board;
     game.currentPlayer = nextGame.currentPlayer;
     game.moves = nextGame.moves;
@@ -405,6 +405,10 @@
     return player === "black" ? "white" : "black";
   }
 
+  function normalizePlayer(player) {
+    return Object.hasOwn(PLAYERS, player) ? player : "black";
+  }
+
   return {
     BOARD_SIZE,
     PLAYERS,
@@ -423,5 +427,6 @@
     findWinningLine,
     isInsideBoard,
     nextPlayer,
+    normalizePlayer,
   };
 });

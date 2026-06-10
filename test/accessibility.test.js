@@ -26,6 +26,30 @@ test("latest move is exposed as the current step", () => {
   assert.match(mainSource, /lastMoveStone/);
 });
 
+test("hint controls are labeled and announced", () => {
+  assert.match(htmlSource, /id="hint-button"/);
+  assert.match(mainSource, /statusAnnouncer\.textContent = getText\("hintAt"\)/);
+  assert.match(styleSource, /\.cell\.hint::before/);
+});
+
+test("theme selector is labeled and high contrast keeps priority", () => {
+  assert.match(htmlSource, /id="theme-select"/);
+  assert.match(htmlSource, /data-i18n-aria="theme"/);
+  assert.match(mainSource, /document\.body\.classList\.add\(`theme-\$\{theme\}`\)/);
+  assert.match(styleSource, /body\.theme-forest/);
+  assert.match(styleSource, /body\.theme-midnight/);
+  assert.match(styleSource, /body\.high-contrast \.game-surface\s*{\s*background: var\(--panel\);/);
+});
+
+test("board coordinates are visible but hidden from assistive tech", () => {
+  assert.match(htmlSource, /class="board-frame"/);
+  assert.match(htmlSource, /class="coord-strip coord-strip-top" aria-hidden="true"/);
+  assert.match(htmlSource, /class="coord-strip coord-strip-left" aria-hidden="true"/);
+  assert.match(styleSource, /\.board-frame\s*{/);
+  assert.match(styleSource, /grid-template-columns: var\(--coord-size\) var\(--board-size\) var\(--coord-size\);/);
+  assert.match(styleSource, /\.coord-strip-top,\s*\.coord-strip-bottom/);
+});
+
 test("reduced motion preference disables stone transition", () => {
   assert.match(styleSource, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(styleSource, /\.cell::after\s*{\s*transition: none;/);

@@ -23,6 +23,26 @@ test("creates a 15 x 15 game by default", () => {
   assert.equal(game.currentPlayer, "black");
 });
 
+test("creates and resets a game with a selected starting player", () => {
+  const game = engine.createGame(15, "white");
+
+  assert.equal(game.currentPlayer, "white");
+  engine.placeStone(game, 7, 7);
+  engine.resetGame(game, "black");
+
+  assert.equal(game.currentPlayer, "black");
+  assert.equal(game.moves.length, 0);
+  assert.equal(game.board[7][7], null);
+});
+
+test("falls back to black for invalid starting players", () => {
+  const game = engine.createGame(15, "blue");
+
+  assert.equal(game.currentPlayer, "black");
+  assert.equal(engine.normalizePlayer("white"), "white");
+  assert.equal(engine.normalizePlayer("blue"), "black");
+});
+
 test("rejects invalid or occupied moves", () => {
   const game = engine.createGame();
 

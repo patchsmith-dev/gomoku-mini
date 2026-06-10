@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.4.0 - 2026-06-07
+
+- Added a Hint action that highlights and announces a suggested move
+- Added computer side selection so the local computer can play Black or White
+- Added automatic computer opening moves when the computer is set to Black
+- Added selected-starting-player support in the game engine
+- Added Classic, Forest, and Midnight visual theme selection with local preference saving
+- Added visible row and column coordinates around the board
+- Updated accessibility, localization, engine tests, README, and architecture notes
+
 ## 0.3.9 - 2026-06-06
 
 - Added Hard and Extreme computer difficulty levels

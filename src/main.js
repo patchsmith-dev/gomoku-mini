@@ -7,6 +7,7 @@ const resultLabel = document.querySelector("#result-label");
 const blackNameInput = document.querySelector("#black-name-input");
 const whiteNameInput = document.querySelector("#white-name-input");
 const languageSelect = document.querySelector("#language-select");
+const themeSelect = document.querySelector("#theme-select");
 const difficultySelect = document.querySelector("#difficulty-select");
 const gameModeInputs = document.querySelectorAll('input[name="game-mode"]');
 const blackScoreName = document.querySelector("#black-score-name");
@@ -23,13 +24,18 @@ const clearRecentButton = document.querySelector("#clear-recent-button");
 const contrastToggle = document.querySelector("#contrast-toggle");
 const timerToggle = document.querySelector("#timer-toggle");
 const elapsedTimeLabel = document.querySelector("#elapsed-time-label");
+const hintButton = document.querySelector("#hint-button");
 const undoButton = document.querySelector("#undo-button");
 const resetButton = document.querySelector("#reset-button");
+const computerSideSelect = document.querySelector("#computer-side-select");
 const MATCH_STORAGE_KEY = "gomoku-mini:recent-match";
 const CONTRAST_STORAGE_KEY = "gomoku-mini:high-contrast";
 const LANGUAGE_STORAGE_KEY = "gomoku-mini:language";
-const COMPUTER_PLAYER = "white";
+const THEME_STORAGE_KEY = "gomoku-mini:theme";
+const DEFAULT_COMPUTER_PLAYER = "white";
 const DEFAULT_LANGUAGE = "en";
+const DEFAULT_THEME = "classic";
+const THEMES = ["classic", "forest", "midnight"];
 const TRANSLATIONS = {
   en: {
     documentTitle: "Gomoku Mini",
@@ -40,16 +46,22 @@ const TRANSLATIONS = {
     gameSetup: "Game setup",
     gameMode: "Game mode",
     language: "Language",
+    theme: "Theme",
     mode: "Mode",
     twoPlayer: "Two Player",
     computer: "Computer",
     black: "Black",
     white: "White",
     difficulty: "Difficulty",
+    computerSide: "Computer side",
     normal: "Normal",
     easy: "Easy",
     hard: "Hard",
     extreme: "Extreme",
+    hint: "Hint",
+    classicTheme: "Classic",
+    forestTheme: "Forest",
+    midnightTheme: "Midnight",
     highContrast: "High contrast",
     timer: "Timer",
     turn: "Turn",
@@ -67,8 +79,12 @@ const TRANSLATIONS = {
     draw: "Draw",
     off: "Off",
     onlyComputerMode: "Only used in Computer mode",
+    usedForComputerAndHints: "Used for computer moves and hints",
     computerTitle(difficulty) {
       return `${difficulty} computer`;
+    },
+    hintAt(row, col) {
+      return `Hint: row ${row}, column ${col}.`;
     },
     cellPosition(row, col) {
       return `row ${row}, column ${col}`;
@@ -121,16 +137,22 @@ const TRANSLATIONS = {
     gameSetup: "游戏设置",
     gameMode: "游戏模式",
     language: "语言",
+    theme: "主题",
     mode: "模式",
     twoPlayer: "双人",
     computer: "电脑",
     black: "黑方",
     white: "白方",
     difficulty: "难度",
+    computerSide: "电脑执子",
     normal: "普通",
     easy: "简单",
     hard: "困难",
     extreme: "极难",
+    hint: "提示",
+    classicTheme: "经典",
+    forestTheme: "林地",
+    midnightTheme: "夜色",
     highContrast: "高对比度",
     timer: "计时器",
     turn: "回合",
@@ -148,8 +170,12 @@ const TRANSLATIONS = {
     draw: "平局",
     off: "关闭",
     onlyComputerMode: "仅在电脑模式使用",
+    usedForComputerAndHints: "用于电脑走子和提示",
     computerTitle(difficulty) {
       return `${difficulty}电脑`;
+    },
+    hintAt(row, col) {
+      return `提示：第 ${row} 行，第 ${col} 列。`;
     },
     cellPosition(row, col) {
       return `第 ${row} 行，第 ${col} 列`;
@@ -197,9 +223,12 @@ const TRANSLATIONS = {
 
 let game = createGame();
 let gameMode = "two-player";
+let computerPlayer = DEFAULT_COMPUTER_PLAYER;
 let focusPosition = { row: 0, col: 0 };
+let hintPosition = null;
 let lastAnnouncement = "";
 let language = readLanguagePreference();
+let theme = readThemePreference();
 let highContrastEnabled = readHighContrastPreference();
 let timerEnabled = false;
 let timerStartedAt = null;
@@ -216,9 +245,10 @@ function renderBoard() {
       const value = game.board[row][col];
       const isWinningCell = game.winningCells.some(([winRow, winCol]) => winRow === row && winCol === col);
       const isLastMove = Boolean(lastMove && lastMove.row === row && lastMove.col === col);
+      const isHintedCell = Boolean(hintPosition && hintPosition.row === row && hintPosition.col === col && !value);
 
       cell.type = "button";
-      cell.className = ["cell", value, isWinningCell ? "win" : "", isLastMove ? "last-move" : ""]
+      cell.className = ["cell", value, isWinningCell ? "win" : "", isLastMove ? "last-move" : "", isHintedCell ? "hint" : ""]
         .filter(Boolean)
         .join(" ");
       cell.dataset.row = row;
@@ -258,6 +288,7 @@ function renderStatus() {
   blackCount.textContent = String(stoneCounts.black);
   whiteCount.textContent = String(stoneCounts.white);
   moveCount.textContent = String(game.moves.length);
+  hintButton.disabled = Boolean(game.winner || game.isDraw || isComputerTurn());
   undoButton.disabled = game.moves.length === 0;
 
   moveHistory.innerHTML = "";
@@ -271,6 +302,7 @@ function renderStatus() {
 function render() {
   normalizeFocusPosition();
   renderLanguage();
+  renderThemePreference();
   renderContrastPreference();
   renderTimerStatus();
   renderComputerOptions();
@@ -311,7 +343,7 @@ function getResultLabel() {
 
 function getPlayerName(player) {
   const input = player === "black" ? blackNameInput : whiteNameInput;
-  const fallback = isComputerMode() && player === COMPUTER_PLAYER ? getText("computer") : getText(player);
+  const fallback = isComputerMode() && player === computerPlayer ? getText("computer") : getText(player);
 
   return input.value.trim() || fallback;
 }
@@ -321,14 +353,15 @@ function handleUndo() {
 
   if (result.ok) {
     focusPosition = { row: result.move.row, col: result.move.col };
+    hintPosition = null;
     clearAnnouncement();
   }
 
-  if (isComputerMode() && game.currentPlayer === COMPUTER_PLAYER && game.moves.length > 0) {
-    const humanMove = undoMove(game);
+  if (isComputerMode() && result.ok && result.move.player === computerPlayer && game.moves.length > 0) {
+    const pairedMove = undoMove(game);
 
-    if (humanMove.ok) {
-      focusPosition = { row: humanMove.move.row, col: humanMove.move.col };
+    if (pairedMove.ok) {
+      focusPosition = { row: pairedMove.move.row, col: pairedMove.move.col };
     }
   }
 
@@ -342,13 +375,20 @@ function handleUndo() {
 function handleReset() {
   resetGame(game);
   focusPosition = { row: 0, col: 0 };
+  hintPosition = null;
   resetTimer();
   clearAnnouncement();
   render();
+  playComputerTurn();
 }
 
 function handleModeChange(event) {
   gameMode = event.target.value;
+  handleReset();
+}
+
+function handleComputerSideChange() {
+  computerPlayer = computerSideSelect.value === "black" ? "black" : DEFAULT_COMPUTER_PLAYER;
   handleReset();
 }
 
@@ -381,9 +421,14 @@ function focusCell(row, col) {
 }
 
 function playFocusedCell() {
+  if (isComputerTurn()) {
+    return;
+  }
+
   const result = placeStone(game, focusPosition.row, focusPosition.col);
 
   if (result.ok) {
+    hintPosition = null;
     startTimerIfNeeded();
     saveCompletedMatch();
     stopTimerIfGameComplete();
@@ -398,11 +443,11 @@ function playFocusedCell() {
 }
 
 function playComputerTurn() {
-  if (!isComputerMode() || game.currentPlayer !== COMPUTER_PLAYER || game.winner || game.isDraw) {
+  if (!isComputerTurn() || game.winner || game.isDraw) {
     return;
   }
 
-  const move = chooseComputerMove(game, COMPUTER_PLAYER, difficultySelect.value);
+  const move = chooseComputerMove(game, computerPlayer, difficultySelect.value);
 
   if (!move) {
     return;
@@ -424,12 +469,35 @@ function isComputerMode() {
   return gameMode === "computer";
 }
 
+function isComputerTurn() {
+  return isComputerMode() && game.currentPlayer === computerPlayer;
+}
+
 function renderComputerOptions() {
   const isEnabled = isComputerMode();
-  blackNameInput.placeholder = getText("black");
-  whiteNameInput.placeholder = isEnabled ? getText("computer") : getText("white");
-  difficultySelect.disabled = !isEnabled;
-  difficultySelect.title = isEnabled ? getText("computerTitle")(getText(difficultySelect.value)) : getText("onlyComputerMode");
+  blackNameInput.placeholder = isEnabled && computerPlayer === "black" ? getText("computer") : getText("black");
+  whiteNameInput.placeholder = isEnabled && computerPlayer === "white" ? getText("computer") : getText("white");
+  computerSideSelect.value = computerPlayer;
+  computerSideSelect.disabled = !isEnabled;
+  computerSideSelect.title = isEnabled ? getText("computerSide") : getText("onlyComputerMode");
+  difficultySelect.title = getText("usedForComputerAndHints");
+}
+
+function showHint() {
+  if (game.winner || game.isDraw || isComputerTurn()) {
+    return;
+  }
+
+  const move = chooseComputerMove(game, game.currentPlayer, difficultySelect.value);
+
+  if (!move) {
+    return;
+  }
+
+  hintPosition = move;
+  statusAnnouncer.textContent = getText("hintAt")(move.row + 1, move.col + 1);
+  render();
+  focusCell(move.row, move.col);
 }
 
 function clearAnnouncement() {
@@ -617,11 +685,28 @@ function readLanguagePreference() {
   }
 }
 
+function readThemePreference() {
+  try {
+    const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+    return THEMES.includes(storedTheme) ? storedTheme : DEFAULT_THEME;
+  } catch {
+    return DEFAULT_THEME;
+  }
+}
+
 function writeLanguagePreference(nextLanguage) {
   try {
     window.localStorage.setItem(LANGUAGE_STORAGE_KEY, nextLanguage);
   } catch {
     // Some privacy modes disable localStorage. Language switching should still work.
+  }
+}
+
+function writeThemePreference(nextTheme) {
+  try {
+    window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+  } catch {
+    // Some privacy modes disable localStorage. Theme switching should still work.
   }
 }
 
@@ -636,6 +721,12 @@ function writeHighContrastPreference(isEnabled) {
 function renderContrastPreference() {
   document.body.classList.toggle("high-contrast", highContrastEnabled);
   contrastToggle.checked = highContrastEnabled;
+}
+
+function renderThemePreference() {
+  document.body.classList.remove(...THEMES.map((themeName) => `theme-${themeName}`));
+  document.body.classList.add(`theme-${theme}`);
+  themeSelect.value = theme;
 }
 
 function handleContrastChange() {
@@ -720,6 +811,12 @@ function handleLanguageChange() {
   render();
 }
 
+function handleThemeChange() {
+  theme = THEMES.includes(themeSelect.value) ? themeSelect.value : DEFAULT_THEME;
+  writeThemePreference(theme);
+  renderThemePreference();
+}
+
 boardElement.addEventListener("click", (event) => {
   const cell = event.target.closest(".cell");
 
@@ -770,9 +867,12 @@ clearRecentButton.addEventListener("click", clearRecentMatch);
 contrastToggle.addEventListener("change", handleContrastChange);
 timerToggle.addEventListener("change", handleTimerChange);
 languageSelect.addEventListener("change", handleLanguageChange);
+themeSelect.addEventListener("change", handleThemeChange);
 blackNameInput.addEventListener("input", render);
 whiteNameInput.addEventListener("input", render);
 difficultySelect.addEventListener("change", render);
+computerSideSelect.addEventListener("change", handleComputerSideChange);
+hintButton.addEventListener("click", showHint);
 gameModeInputs.forEach((input) => input.addEventListener("change", handleModeChange));
 
 render();

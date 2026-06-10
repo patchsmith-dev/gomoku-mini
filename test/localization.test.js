@@ -31,3 +31,22 @@ test("advanced difficulty labels are localized", () => {
   assert.match(mainSource, /hard: "困难"/);
   assert.match(mainSource, /extreme: "极难"/);
 });
+
+test("computer side and hint labels are localized", () => {
+  assert.match(mainSource, /computerSide: "Computer side"/);
+  assert.match(mainSource, /computerSide: "电脑执子"/);
+  assert.match(mainSource, /hint: "Hint"/);
+  assert.match(mainSource, /hint: "提示"/);
+  assert.match(mainSource, /hintAt\(row, col\)/);
+});
+
+test("theme labels are localized", () => {
+  assert.match(mainSource, /theme: "Theme"/);
+  assert.match(mainSource, /theme: "主题"/);
+  assert.match(mainSource, /classicTheme: "Classic"/);
+  assert.match(mainSource, /forestTheme: "Forest"/);
+  assert.match(mainSource, /midnightTheme: "Midnight"/);
+  assert.match(mainSource, /classicTheme: "经典"/);
+  assert.match(mainSource, /forestTheme: "林地"/);
+  assert.match(mainSource, /midnightTheme: "夜色"/);
+});
