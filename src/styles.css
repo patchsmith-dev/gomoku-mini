@@ -160,6 +160,8 @@ h1 {
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 10px;
 }
 
@@ -174,6 +176,7 @@ h1 {
   --board-size: min(70vw, 700px);
   --coord-size: 24px;
   display: grid;
+  gap: 10px;
   place-items: center;
   min-width: 0;
 }
@@ -263,6 +266,25 @@ h1 {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
+.selected-cell-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 38px;
+  border: 1px solid rgba(31, 41, 51, 0.1);
+  border-radius: 8px;
+  padding: 6px 14px;
+  background: var(--panel);
+}
+
+.selected-cell-status strong {
+  min-width: 3ch;
+  color: var(--accent-dark);
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+}
+
 .cell {
   position: relative;
   display: grid;
@@ -347,7 +369,8 @@ body.high-contrast .status-block,
 body.high-contrast .score-grid,
 body.high-contrast .history-box,
 body.high-contrast .recent-match,
-body.high-contrast .setup-panel {
+body.high-contrast .setup-panel,
+body.high-contrast .selected-cell-status {
   border-color: #050505;
 }
 
@@ -429,7 +452,8 @@ body.high-contrast .cell.win {
 .theme-field,
 .name-field,
 .difficulty-field,
-.computer-side-field {
+.computer-side-field,
+.opening-field {
   display: grid;
   gap: 8px;
 }
@@ -479,7 +503,8 @@ body.high-contrast .cell.win {
 .language-field select,
 .theme-field select,
 .difficulty-field select,
-.computer-side-field select {
+.computer-side-field select,
+.opening-field select {
   width: 100%;
   min-height: 40px;
   border: 1px solid rgba(31, 41, 51, 0.14);
@@ -494,7 +519,8 @@ body.theme-midnight .name-field input,
 body.theme-midnight .language-field select,
 body.theme-midnight .theme-field select,
 body.theme-midnight .difficulty-field select,
-body.theme-midnight .computer-side-field select {
+body.theme-midnight .computer-side-field select,
+body.theme-midnight .opening-field select {
   background: #0f172a;
   border-color: rgba(216, 222, 233, 0.28);
 }
@@ -502,14 +528,16 @@ body.theme-midnight .computer-side-field select {
 .language-field select,
 .theme-field select,
 .difficulty-field select,
-.computer-side-field select {
+.computer-side-field select,
+.opening-field select {
   cursor: pointer;
 }
 
 .language-field select:disabled,
 .theme-field select:disabled,
 .difficulty-field select:disabled,
-.computer-side-field select:disabled {
+.computer-side-field select:disabled,
+.opening-field select:disabled {
   cursor: not-allowed;
   opacity: 0.58;
 }
@@ -518,7 +546,8 @@ body.theme-midnight .computer-side-field select {
 .language-field select:focus,
 .theme-field select:focus,
 .difficulty-field select:focus,
-.computer-side-field select:focus {
+.computer-side-field select:focus,
+.opening-field select:focus {
   outline: 2px solid rgba(29, 122, 111, 0.55);
   outline-offset: 2px;
 }
@@ -595,8 +624,37 @@ body.theme-midnight .computer-side-field select {
 }
 
 #move-history li {
-  padding: 4px 0;
+  padding: 3px 0;
   color: var(--muted);
+}
+
+.history-move {
+  width: 100%;
+  min-height: 32px;
+  border: 0;
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: var(--muted);
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  touch-action: manipulation;
+}
+
+.history-move:hover,
+.history-move:focus-visible {
+  color: #ffffff;
+  background: var(--accent);
+  outline: 2px solid rgba(29, 122, 111, 0.55);
+  outline-offset: 1px;
+}
+
+body.high-contrast .history-move:hover,
+body.high-contrast .history-move:focus-visible {
+  color: Canvas;
+  background: CanvasText;
+  outline: 3px solid #004f46;
 }
 
 .recent-match {
@@ -694,7 +752,8 @@ body.theme-midnight .computer-side-field select {
   }
 
   .actions button {
-    flex: 1;
+    flex: 1 1 calc(50% - 6px);
+    padding: 0 10px;
   }
 
   .play-layout {

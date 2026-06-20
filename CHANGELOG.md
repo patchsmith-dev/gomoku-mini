@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.4.1 - 2026-06-20
+
+- Changed move history, hint announcements, and cell descriptions to use board coordinates such as H8
+- Added a computer opening style control with Center and Varied options
+- Made move history entries clickable so players can refocus previous moves on the board
+- Added a selected-coordinate readout below the board for touch and keyboard feedback
+- Added a copy-current-position action for sharing the active board state
+
 ## 0.4.0 - 2026-06-07
 
 - Added a Hint action that highlights and announces a suggested move

@@ -18,11 +18,41 @@ test("last move labels are localized", () => {
   assert.match(mainSource, /getCellLabel\(row, col, value, isLastMove\)/);
 });
 
+test("move labels use board coordinates", () => {
+  assert.match(mainSource, /const COLUMN_LABELS = "ABCDEFGHIJKLMNO"\.split\(""\);/);
+  assert.match(mainSource, /function getBoardCoordinate\(row, col\)/);
+  assert.match(mainSource, /const coordinate = getBoardCoordinate\(move\.row, move\.col\);/);
+  assert.match(mainSource, /getText\("moveEntry"\)\(getPlayerName\(move\.player\), coordinate\)/);
+  assert.match(mainSource, /getText\("hintAt"\)\(getBoardCoordinate\(move\.row, move\.col\)\)/);
+  assert.match(mainSource, /getText\("cellPosition"\)\(getBoardCoordinate\(row, col\), row \+ 1, COLUMN_LABELS\[col\]\)/);
+});
+
+test("board coordinate text is localized", () => {
+  assert.match(mainSource, /hintAt\(coordinate\)/);
+  assert.match(mainSource, /return `Hint: \$\{coordinate\}\.`/);
+  assert.match(mainSource, /return `提示：\$\{coordinate\}。`/);
+  assert.match(mainSource, /moveEntry\(playerName, coordinate\)/);
+  assert.match(mainSource, /focusMove\(coordinate\)/);
+  assert.match(mainSource, /return `Focus move at \$\{coordinate\}`/);
+  assert.match(mainSource, /return `定位到 \$\{coordinate\}`/);
+  assert.match(mainSource, /selectedCell: "Selected"/);
+  assert.match(mainSource, /selectedCell: "已选"/);
+});
+
 test("recent match copying uses localized summaries", () => {
   assert.match(mainSource, /async function copyRecentMatch\(\)/);
   assert.match(mainSource, /getRecentMatchSummary\(match\)/);
   assert.match(mainSource, /copiedRecentMatch/);
   assert.match(mainSource, /copyRecentMatchFailed/);
+});
+
+test("current position copying uses localized summaries", () => {
+  assert.match(mainSource, /copyPosition: "Copy Position"/);
+  assert.match(mainSource, /copyPosition: "复制局面"/);
+  assert.match(mainSource, /copiedPosition: "Current position copied\."/);
+  assert.match(mainSource, /copyPositionFailed: "Could not copy the current position\."/);
+  assert.match(mainSource, /positionSummary\(\{ result, turn, selected, moves \}\)/);
+  assert.match(mainSource, /getCurrentPositionSummary\(\)/);
 });
 
 test("advanced difficulty labels are localized", () => {
@@ -37,7 +67,7 @@ test("computer side and hint labels are localized", () => {
   assert.match(mainSource, /computerSide: "电脑执子"/);
   assert.match(mainSource, /hint: "Hint"/);
   assert.match(mainSource, /hint: "提示"/);
-  assert.match(mainSource, /hintAt\(row, col\)/);
+  assert.match(mainSource, /hintAt\(coordinate\)/);
 });
 
 test("theme labels are localized", () => {
@@ -49,4 +79,14 @@ test("theme labels are localized", () => {
   assert.match(mainSource, /classicTheme: "经典"/);
   assert.match(mainSource, /forestTheme: "林地"/);
   assert.match(mainSource, /midnightTheme: "夜色"/);
+});
+
+test("computer opening labels are localized", () => {
+  assert.match(mainSource, /opening: "Opening"/);
+  assert.match(mainSource, /opening: "开局"/);
+  assert.match(mainSource, /centerOpening: "Center"/);
+  assert.match(mainSource, /variedOpening: "Varied"/);
+  assert.match(mainSource, /centerOpening: "中心"/);
+  assert.match(mainSource, /variedOpening: "多变化"/);
+  assert.match(mainSource, /openingTitle: "Used when the computer starts as Black"/);
 });

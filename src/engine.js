@@ -19,6 +19,10 @@
     hard: "Hard",
     extreme: "Extreme",
   };
+  const COMPUTER_OPENINGS = {
+    center: "Center",
+    varied: "Varied",
+  };
   const DIRECTIONS = [
     [0, 1],
     [1, 0],
@@ -106,12 +110,17 @@
     };
   }
 
-  function chooseComputerMove(game, player = "white", difficulty = "normal") {
+  function chooseComputerMove(game, player = "white", difficulty = "normal", options = {}) {
     if (game.winner || game.isDraw) {
       return null;
     }
 
     const selectedDifficulty = Object.hasOwn(COMPUTER_DIFFICULTIES, difficulty) ? difficulty : "normal";
+    const openingMove = chooseOpeningMove(game, options);
+
+    if (openingMove) {
+      return openingMove;
+    }
 
     if (selectedDifficulty === "easy") {
       return chooseNearbyMove(game);
@@ -142,6 +151,35 @@
     }
 
     return chooseNearbyMove(game);
+  }
+
+  function chooseOpeningMove(game, { openingStyle = "center", openingIndex = 0 } = {}) {
+    if (game.moves.length > 0 || getOccupiedCells(game).length > 0) {
+      return null;
+    }
+
+    const center = Math.floor(game.size / 2);
+
+    if (openingStyle !== "varied") {
+      return { row: center, col: center };
+    }
+
+    const offsets = [
+      [0, 0],
+      [-1, 0],
+      [0, 1],
+      [1, 0],
+      [0, -1],
+      [-1, -1],
+      [-1, 1],
+      [1, 1],
+      [1, -1],
+    ];
+    const selectedOffset = offsets[Math.abs(openingIndex) % offsets.length];
+    const row = center + selectedOffset[0];
+    const col = center + selectedOffset[1];
+
+    return isInsideBoard(game, row, col) ? { row, col } : { row: center, col: center };
   }
 
   function findImmediateMove(game, player) {
@@ -413,6 +451,7 @@
     BOARD_SIZE,
     PLAYERS,
     COMPUTER_DIFFICULTIES,
+    COMPUTER_OPENINGS,
     createEmptyBoard,
     createGame,
     placeStone,
@@ -420,6 +459,7 @@
     resetGame,
     countStones,
     chooseComputerMove,
+    chooseOpeningMove,
     findImmediateMove,
     chooseNearbyMove,
     chooseScoredMove,

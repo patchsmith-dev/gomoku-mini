@@ -3,7 +3,6 @@
 ## Near Term
 
 - Improve mobile layout and touch behavior
-- Add opening variety for the computer opponent
 
 ## Later
 

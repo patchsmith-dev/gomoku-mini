@@ -9,6 +9,7 @@ const whiteNameInput = document.querySelector("#white-name-input");
 const languageSelect = document.querySelector("#language-select");
 const themeSelect = document.querySelector("#theme-select");
 const difficultySelect = document.querySelector("#difficulty-select");
+const openingSelect = document.querySelector("#opening-select");
 const gameModeInputs = document.querySelectorAll('input[name="game-mode"]');
 const blackScoreName = document.querySelector("#black-score-name");
 const whiteScoreName = document.querySelector("#white-score-name");
@@ -16,6 +17,7 @@ const blackCount = document.querySelector("#black-count");
 const whiteCount = document.querySelector("#white-count");
 const moveCount = document.querySelector("#move-count");
 const moveHistory = document.querySelector("#move-history");
+const selectedCellLabel = document.querySelector("#selected-cell-label");
 const statusAnnouncer = document.querySelector("#status-announcer");
 const recentMatchLabel = document.querySelector("#recent-match-label");
 const recentMatchTime = document.querySelector("#recent-match-time");
@@ -25,6 +27,7 @@ const contrastToggle = document.querySelector("#contrast-toggle");
 const timerToggle = document.querySelector("#timer-toggle");
 const elapsedTimeLabel = document.querySelector("#elapsed-time-label");
 const hintButton = document.querySelector("#hint-button");
+const copyPositionButton = document.querySelector("#copy-position-button");
 const undoButton = document.querySelector("#undo-button");
 const resetButton = document.querySelector("#reset-button");
 const computerSideSelect = document.querySelector("#computer-side-select");
@@ -36,6 +39,7 @@ const DEFAULT_COMPUTER_PLAYER = "white";
 const DEFAULT_LANGUAGE = "en";
 const DEFAULT_THEME = "classic";
 const THEMES = ["classic", "forest", "midnight"];
+const COLUMN_LABELS = "ABCDEFGHIJKLMNO".split("");
 const TRANSLATIONS = {
   en: {
     documentTitle: "Gomoku Mini",
@@ -54,11 +58,15 @@ const TRANSLATIONS = {
     white: "White",
     difficulty: "Difficulty",
     computerSide: "Computer side",
+    opening: "Opening",
     normal: "Normal",
     easy: "Easy",
     hard: "Hard",
     extreme: "Extreme",
+    centerOpening: "Center",
+    variedOpening: "Varied",
     hint: "Hint",
+    copyPosition: "Copy Position",
     classicTheme: "Classic",
     forestTheme: "Forest",
     midnightTheme: "Midnight",
@@ -68,6 +76,7 @@ const TRANSLATIONS = {
     result: "Result",
     time: "Time",
     moves: "Moves",
+    selectedCell: "Selected",
     recentMatch: "Recent Match",
     moveHistory: "Move history",
     noCompletedMatch: "No completed match yet",
@@ -80,14 +89,15 @@ const TRANSLATIONS = {
     off: "Off",
     onlyComputerMode: "Only used in Computer mode",
     usedForComputerAndHints: "Used for computer moves and hints",
+    openingTitle: "Used when the computer starts as Black",
     computerTitle(difficulty) {
       return `${difficulty} computer`;
     },
-    hintAt(row, col) {
-      return `Hint: row ${row}, column ${col}.`;
+    hintAt(coordinate) {
+      return `Hint: ${coordinate}.`;
     },
-    cellPosition(row, col) {
-      return `row ${row}, column ${col}`;
+    cellPosition(coordinate, row, col) {
+      return `${coordinate}, row ${row}, column ${col}`;
     },
     emptyCellAt(position) {
       return `Empty cell at ${position}`;
@@ -98,8 +108,11 @@ const TRANSLATIONS = {
     lastMoveStone(stoneLabel) {
       return `${stoneLabel}, last move`;
     },
-    moveEntry(playerName, row, col) {
-      return `${playerName}: ${row}, ${col}`;
+    moveEntry(playerName, coordinate) {
+      return `${playerName}: ${coordinate}`;
+    },
+    focusMove(coordinate) {
+      return `Focus move at ${coordinate}`;
     },
     wins(playerName) {
       return `${playerName} wins`;
@@ -119,6 +132,11 @@ const TRANSLATIONS = {
     savedRecently: "Saved recently",
     copiedRecentMatch: "Recent match copied.",
     copyRecentMatchFailed: "Could not copy the recent match.",
+    copiedPosition: "Current position copied.",
+    copyPositionFailed: "Could not copy the current position.",
+    positionSummary({ result, turn, selected, moves }) {
+      return `Gomoku Mini\nResult: ${result}\nTurn: ${turn}\nSelected: ${selected}\nMoves: ${moves}`;
+    },
     savedAt(date) {
       return `Saved ${date.toLocaleString(undefined, {
         month: "short",
@@ -145,11 +163,15 @@ const TRANSLATIONS = {
     white: "白方",
     difficulty: "难度",
     computerSide: "电脑执子",
+    opening: "开局",
     normal: "普通",
     easy: "简单",
     hard: "困难",
     extreme: "极难",
+    centerOpening: "中心",
+    variedOpening: "多变化",
     hint: "提示",
+    copyPosition: "复制局面",
     classicTheme: "经典",
     forestTheme: "林地",
     midnightTheme: "夜色",
@@ -159,6 +181,7 @@ const TRANSLATIONS = {
     result: "结果",
     time: "时间",
     moves: "步数",
+    selectedCell: "已选",
     recentMatch: "最近对局",
     moveHistory: "走子记录",
     noCompletedMatch: "暂无已完成对局",
@@ -171,14 +194,15 @@ const TRANSLATIONS = {
     off: "关闭",
     onlyComputerMode: "仅在电脑模式使用",
     usedForComputerAndHints: "用于电脑走子和提示",
+    openingTitle: "电脑执黑先手时使用",
     computerTitle(difficulty) {
       return `${difficulty}电脑`;
     },
-    hintAt(row, col) {
-      return `提示：第 ${row} 行，第 ${col} 列。`;
+    hintAt(coordinate) {
+      return `提示：${coordinate}。`;
     },
-    cellPosition(row, col) {
-      return `第 ${row} 行，第 ${col} 列`;
+    cellPosition(coordinate, row, col) {
+      return `${coordinate}，第 ${row} 行，${col} 列`;
     },
     emptyCellAt(position) {
       return `空位，${position}`;
@@ -189,8 +213,11 @@ const TRANSLATIONS = {
     lastMoveStone(stoneLabel) {
       return `${stoneLabel}，最后一手`;
     },
-    moveEntry(playerName, row, col) {
-      return `${playerName}：${row}，${col}`;
+    moveEntry(playerName, coordinate) {
+      return `${playerName}：${coordinate}`;
+    },
+    focusMove(coordinate) {
+      return `定位到 ${coordinate}`;
     },
     wins(playerName) {
       return `${playerName}获胜`;
@@ -210,6 +237,11 @@ const TRANSLATIONS = {
     savedRecently: "刚刚保存",
     copiedRecentMatch: "已复制最近对局。",
     copyRecentMatchFailed: "无法复制最近对局。",
+    copiedPosition: "已复制当前局面。",
+    copyPositionFailed: "无法复制当前局面。",
+    positionSummary({ result, turn, selected, moves }) {
+      return `Gomoku Mini\n结果：${result}\n回合：${turn}\n已选：${selected}\n走子：${moves}`;
+    },
     savedAt(date) {
       return `已保存 ${date.toLocaleString("zh-CN", {
         month: "short",
@@ -224,6 +256,7 @@ const TRANSLATIONS = {
 let game = createGame();
 let gameMode = "two-player";
 let computerPlayer = DEFAULT_COMPUTER_PLAYER;
+let openingIndex = 0;
 let focusPosition = { row: 0, col: 0 };
 let hintPosition = null;
 let lastAnnouncement = "";
@@ -268,7 +301,7 @@ function renderBoard() {
 }
 
 function getCellLabel(row, col, value, isLastMove = false) {
-  const position = getText("cellPosition")(row + 1, col + 1);
+  const position = getText("cellPosition")(getBoardCoordinate(row, col), row + 1, COLUMN_LABELS[col]);
   if (!value) {
     return getText("emptyCellAt")(position);
   }
@@ -294,9 +327,22 @@ function renderStatus() {
   moveHistory.innerHTML = "";
   game.moves.slice().reverse().forEach((move) => {
     const item = document.createElement("li");
-    item.textContent = getText("moveEntry")(getPlayerName(move.player), move.row + 1, move.col + 1);
+    const button = document.createElement("button");
+    const coordinate = getBoardCoordinate(move.row, move.col);
+
+    button.type = "button";
+    button.className = "history-move";
+    button.dataset.row = move.row;
+    button.dataset.col = move.col;
+    button.textContent = getText("moveEntry")(getPlayerName(move.player), coordinate);
+    button.setAttribute("aria-label", getText("focusMove")(coordinate));
+    item.appendChild(button);
     moveHistory.appendChild(item);
   });
+}
+
+function getBoardCoordinate(row, col) {
+  return `${COLUMN_LABELS[col] ?? "?"}${row + 1}`;
 }
 
 function render() {
@@ -308,6 +354,7 @@ function render() {
   renderComputerOptions();
   renderBoard();
   renderStatus();
+  renderFocusStatus();
   renderRecentMatch();
 }
 
@@ -380,6 +427,7 @@ function handleReset() {
   clearAnnouncement();
   render();
   playComputerTurn();
+  openingIndex += 1;
 }
 
 function handleModeChange(event) {
@@ -389,6 +437,10 @@ function handleModeChange(event) {
 
 function handleComputerSideChange() {
   computerPlayer = computerSideSelect.value === "black" ? "black" : DEFAULT_COMPUTER_PLAYER;
+  handleReset();
+}
+
+function handleOpeningChange() {
   handleReset();
 }
 
@@ -418,6 +470,11 @@ function focusCell(row, col) {
   });
 
   getCell(focusPosition.row, focusPosition.col)?.focus();
+  renderFocusStatus();
+}
+
+function renderFocusStatus() {
+  selectedCellLabel.textContent = getBoardCoordinate(focusPosition.row, focusPosition.col);
 }
 
 function playFocusedCell() {
@@ -447,7 +504,10 @@ function playComputerTurn() {
     return;
   }
 
-  const move = chooseComputerMove(game, computerPlayer, difficultySelect.value);
+  const move = chooseComputerMove(game, computerPlayer, difficultySelect.value, {
+    openingStyle: openingSelect.value,
+    openingIndex,
+  });
 
   if (!move) {
     return;
@@ -480,6 +540,8 @@ function renderComputerOptions() {
   computerSideSelect.value = computerPlayer;
   computerSideSelect.disabled = !isEnabled;
   computerSideSelect.title = isEnabled ? getText("computerSide") : getText("onlyComputerMode");
+  openingSelect.disabled = !isEnabled;
+  openingSelect.title = isEnabled ? getText("openingTitle") : getText("onlyComputerMode");
   difficultySelect.title = getText("usedForComputerAndHints");
 }
 
@@ -495,7 +557,7 @@ function showHint() {
   }
 
   hintPosition = move;
-  statusAnnouncer.textContent = getText("hintAt")(move.row + 1, move.col + 1);
+  statusAnnouncer.textContent = getText("hintAt")(getBoardCoordinate(move.row, move.col));
   render();
   focusCell(move.row, move.col);
 }
@@ -666,6 +728,33 @@ async function copyRecentMatch() {
   } catch {
     statusAnnouncer.textContent = getText("copyRecentMatchFailed");
   }
+}
+
+async function copyCurrentPosition() {
+  if (!navigator.clipboard?.writeText) {
+    statusAnnouncer.textContent = getText("copyPositionFailed");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(getCurrentPositionSummary());
+    statusAnnouncer.textContent = getText("copiedPosition");
+  } catch {
+    statusAnnouncer.textContent = getText("copyPositionFailed");
+  }
+}
+
+function getCurrentPositionSummary() {
+  const moveText = game.moves
+    .map((move, index) => `${index + 1}. ${getText("moveEntry")(getPlayerName(move.player), getBoardCoordinate(move.row, move.col))}`)
+    .join(" ");
+
+  return getText("positionSummary")({
+    result: getResultLabel(),
+    turn: getPlayerName(game.currentPlayer),
+    selected: getBoardCoordinate(focusPosition.row, focusPosition.col),
+    moves: moveText || getText("noCompletedMatch"),
+  });
 }
 
 function readHighContrastPreference() {
@@ -860,8 +949,19 @@ boardElement.addEventListener("keydown", (event) => {
   action();
 });
 
+moveHistory.addEventListener("click", (event) => {
+  const button = event.target.closest(".history-move");
+
+  if (!button) {
+    return;
+  }
+
+  focusCell(Number(button.dataset.row), Number(button.dataset.col));
+});
+
 undoButton.addEventListener("click", handleUndo);
 resetButton.addEventListener("click", handleReset);
+copyPositionButton.addEventListener("click", copyCurrentPosition);
 copyRecentButton.addEventListener("click", copyRecentMatch);
 clearRecentButton.addEventListener("click", clearRecentMatch);
 contrastToggle.addEventListener("change", handleContrastChange);
@@ -872,6 +972,7 @@ blackNameInput.addEventListener("input", render);
 whiteNameInput.addEventListener("input", render);
 difficultySelect.addEventListener("change", render);
 computerSideSelect.addEventListener("change", handleComputerSideChange);
+openingSelect.addEventListener("change", handleOpeningChange);
 hintButton.addEventListener("click", showHint);
 gameModeInputs.forEach((input) => input.addEventListener("change", handleModeChange));
 

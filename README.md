@@ -13,6 +13,7 @@ Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in 
 - Optional local computer opponent mode
 - Four selectable computer difficulty levels
 - Selectable computer side for Black or White
+- Center or Varied computer opening style
 - Suggested move hints with board highlighting
 - English and Chinese interface option
 - Classic, Forest, and Midnight visual themes
@@ -20,9 +21,13 @@ Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in 
 - Black and white turn tracking
 - Last-move marker
 - Visible board coordinates for rows and columns
+- Selected-coordinate readout for touch and keyboard feedback
 - Five-in-a-row win detection
 - Undo and reset controls
 - Move history panel
+- Clickable move history for refocusing previous stones
+- Coordinate-based move history and hints
+- Copyable current position summary
 - Recent completed match summary
 - Copyable recent match summary
 - Optional elapsed game timer
@@ -101,9 +106,15 @@ npm run check
 
 Black moves first. Players take turns placing stones on empty intersections. The first player to connect five or more stones horizontally, vertically, or diagonally wins.
 
-Use the row and column coordinates around the board to reference moves quickly. Columns are labeled A through O, and rows are labeled 1 through 15.
+Use the row and column coordinates around the board to reference moves quickly. Columns are labeled A through O, and rows are labeled 1 through 15. Move history and hints use the same coordinate format, such as H8.
 
-Use the mode control to switch between local two-player play and a simple local computer opponent. In computer mode, the computer can play Black or White. If the computer plays Black, it opens the match automatically. Easy chooses a nearby open cell, Normal wins or blocks immediate threats, Hard scores line extensions and pressure, and Extreme adds stronger defense with a one-step response estimate.
+Click any move in the move history to focus that stone on the board.
+
+Use the selected-coordinate readout below the board to confirm the current focused cell while tapping or navigating with the keyboard.
+
+Use Copy Position to copy the active result, turn, selected coordinate, and move sequence for sharing or debugging.
+
+Use the mode control to switch between local two-player play and a simple local computer opponent. In computer mode, the computer can play Black or White. If the computer plays Black, it opens the match automatically. Choose Center opening for the classic middle-point start, or Varied opening to rotate through nearby opening points across resets. Easy chooses a nearby open cell, Normal wins or blocks immediate threats, Hard scores line extensions and pressure, and Extreme adds stronger defense with a one-step response estimate.
 
 Use the Hint control to highlight a suggested move for the current player. Hints use the selected difficulty level and are announced through the status region for screen-reader users.
 
@@ -129,7 +140,6 @@ Browser-facing localization, focus visibility, and UI affordances are covered by
 Useful areas for contributors:
 
 - Improve mobile layout and touch behavior
-- Add opening variety for the computer opponent
 
 ## Contributing
 

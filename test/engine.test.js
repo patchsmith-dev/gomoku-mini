@@ -213,6 +213,31 @@ test("computer move opens near the board center", () => {
   assert.deepEqual(engine.chooseComputerMove(game, "white"), { row: 7, col: 7 });
 });
 
+test("computer opening can vary near the center", () => {
+  const game = engine.createGame();
+
+  assert.deepEqual(engine.chooseComputerMove(game, "white", "normal", { openingStyle: "center" }), { row: 7, col: 7 });
+  assert.deepEqual(engine.chooseComputerMove(game, "white", "normal", { openingStyle: "varied", openingIndex: 1 }), {
+    row: 6,
+    col: 7,
+  });
+  assert.deepEqual(engine.chooseComputerMove(game, "white", "normal", { openingStyle: "varied", openingIndex: 3 }), {
+    row: 8,
+    col: 7,
+  });
+});
+
+test("computer opening is only used on an empty board", () => {
+  const game = engine.createGame();
+
+  playMoves(game, [[0, 0]]);
+
+  assert.deepEqual(engine.chooseComputerMove(game, "white", "normal", { openingStyle: "varied", openingIndex: 1 }), {
+    row: 1,
+    col: 1,
+  });
+});
+
 test("computer difficulty list includes hard and extreme", () => {
   assert.deepEqual(Object.keys(engine.COMPUTER_DIFFICULTIES).sort(), ["easy", "extreme", "hard", "normal"]);
 });

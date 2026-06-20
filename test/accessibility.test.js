@@ -32,6 +32,14 @@ test("hint controls are labeled and announced", () => {
   assert.match(styleSource, /\.cell\.hint::before/);
 });
 
+test("current position copy action is available", () => {
+  assert.match(htmlSource, /id="copy-position-button"/);
+  assert.match(htmlSource, /data-i18n="copyPosition"/);
+  assert.match(mainSource, /async function copyCurrentPosition\(\)/);
+  assert.match(mainSource, /navigator\.clipboard\.writeText\(getCurrentPositionSummary\(\)\)/);
+  assert.match(mainSource, /copyPositionButton\.addEventListener\("click", copyCurrentPosition\)/);
+});
+
 test("theme selector is labeled and high contrast keeps priority", () => {
   assert.match(htmlSource, /id="theme-select"/);
   assert.match(htmlSource, /data-i18n-aria="theme"/);
@@ -41,6 +49,14 @@ test("theme selector is labeled and high contrast keeps priority", () => {
   assert.match(styleSource, /body\.high-contrast \.game-surface\s*{\s*background: var\(--panel\);/);
 });
 
+test("computer opening selector is labeled", () => {
+  assert.match(htmlSource, /id="opening-select"/);
+  assert.match(htmlSource, /data-i18n-aria="opening"/);
+  assert.match(htmlSource, /value="varied" data-i18n="variedOpening"/);
+  assert.match(mainSource, /openingSelect\.disabled = !isEnabled/);
+  assert.match(mainSource, /openingStyle: openingSelect\.value/);
+});
+
 test("board coordinates are visible but hidden from assistive tech", () => {
   assert.match(htmlSource, /class="board-frame"/);
   assert.match(htmlSource, /class="coord-strip coord-strip-top" aria-hidden="true"/);
@@ -48,6 +64,24 @@ test("board coordinates are visible but hidden from assistive tech", () => {
   assert.match(styleSource, /\.board-frame\s*{/);
   assert.match(styleSource, /grid-template-columns: var\(--coord-size\) var\(--board-size\) var\(--coord-size\);/);
   assert.match(styleSource, /\.coord-strip-top,\s*\.coord-strip-bottom/);
+});
+
+test("selected board coordinate is exposed near the board", () => {
+  assert.match(htmlSource, /class="selected-cell-status" aria-live="polite"/);
+  assert.match(htmlSource, /id="selected-cell-label"/);
+  assert.match(mainSource, /function renderFocusStatus\(\)/);
+  assert.match(mainSource, /selectedCellLabel\.textContent = getBoardCoordinate\(focusPosition\.row, focusPosition\.col\)/);
+  assert.match(mainSource, /renderFocusStatus\(\);/);
+  assert.match(styleSource, /\.selected-cell-status\s*{/);
+});
+
+test("move history entries can refocus board cells", () => {
+  assert.match(mainSource, /button\.className = "history-move"/);
+  assert.match(mainSource, /button\.setAttribute\("aria-label", getText\("focusMove"\)\(coordinate\)\)/);
+  assert.match(mainSource, /moveHistory\.addEventListener\("click"/);
+  assert.match(mainSource, /focusCell\(Number\(button\.dataset\.row\), Number\(button\.dataset\.col\)\)/);
+  assert.match(styleSource, /\.history-move:hover,\s*\.history-move:focus-visible/);
+  assert.match(styleSource, /touch-action: manipulation/);
 });
 
 test("reduced motion preference disables stone transition", () => {
