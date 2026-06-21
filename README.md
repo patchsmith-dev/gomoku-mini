@@ -24,6 +24,7 @@ Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in 
 - Selected-coordinate readout for touch and keyboard feedback
 - Five-in-a-row win detection
 - Undo and reset controls
+- Resign control for ending a game early
 - Move history panel
 - Clickable move history for refocusing previous stones
 - Coordinate-based move history and hints
@@ -113,6 +114,8 @@ Click any move in the move history to focus that stone on the board.
 Use the selected-coordinate readout below the board to confirm the current focused cell while tapping or navigating with the keyboard.
 
 Use Copy Position to copy the active result, turn, selected coordinate, and move sequence for sharing or debugging.
+
+Use Resign to end the current game early and award the win to the opponent.
 
 Use the mode control to switch between local two-player play and a simple local computer opponent. In computer mode, the computer can play Black or White. If the computer plays Black, it opens the match automatically. Choose Center opening for the classic middle-point start, or Varied opening to rotate through nearby opening points across resets. Easy chooses a nearby open cell, Normal wins or blocks immediate threats, Hard scores line extensions and pressure, and Extreme adds stronger defense with a one-step response estimate.
 

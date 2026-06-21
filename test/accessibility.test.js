@@ -40,6 +40,15 @@ test("current position copy action is available", () => {
   assert.match(mainSource, /copyPositionButton\.addEventListener\("click", copyCurrentPosition\)/);
 });
 
+test("resign action is available and announced", () => {
+  assert.match(htmlSource, /id="resign-button"/);
+  assert.match(htmlSource, /data-i18n="resign"/);
+  assert.match(mainSource, /function handleResign\(\)/);
+  assert.match(mainSource, /resignButton\.disabled = Boolean\(game\.winner \|\| game\.isDraw \|\| isComputerTurn\(\)\)/);
+  assert.match(mainSource, /statusAnnouncer\.textContent = getText\("resigned"\)/);
+  assert.match(mainSource, /resignButton\.addEventListener\("click", handleResign\)/);
+});
+
 test("theme selector is labeled and high contrast keeps priority", () => {
   assert.match(htmlSource, /id="theme-select"/);
   assert.match(htmlSource, /data-i18n-aria="theme"/);

@@ -207,6 +207,26 @@ test("reset returns the game to the opening state", () => {
   assert.deepEqual(engine.countStones(game), { black: 0, white: 0 });
 });
 
+test("resign marks the opponent as winner", () => {
+  const game = engine.createGame();
+
+  const result = engine.resignGame(game, "black");
+
+  assert.equal(result.ok, true);
+  assert.equal(result.resigned, "black");
+  assert.equal(result.winner, "white");
+  assert.equal(game.winner, "white");
+  assert.deepEqual(game.winningCells, []);
+});
+
+test("resign is rejected after the game is over", () => {
+  const game = engine.createGame();
+
+  engine.resignGame(game, "black");
+
+  assert.equal(engine.resignGame(game, "white").reason, "game-over");
+});
+
 test("computer move opens near the board center", () => {
   const game = engine.createGame();
 

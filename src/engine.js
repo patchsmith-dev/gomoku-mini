@@ -102,6 +102,20 @@
     game.isDraw = nextGame.isDraw;
   }
 
+  function resignGame(game, player = game.currentPlayer) {
+    const resigningPlayer = normalizePlayer(player);
+
+    if (game.winner || game.isDraw) {
+      return { ok: false, reason: "game-over" };
+    }
+
+    game.winner = nextPlayer(resigningPlayer);
+    game.winningCells = [];
+    game.isDraw = false;
+
+    return { ok: true, winner: game.winner, resigned: resigningPlayer };
+  }
+
   function countStones(game) {
     const black = game.moves.filter((move) => move.player === "black").length;
     return {
@@ -457,6 +471,7 @@
     placeStone,
     undoMove,
     resetGame,
+    resignGame,
     countStones,
     chooseComputerMove,
     chooseOpeningMove,

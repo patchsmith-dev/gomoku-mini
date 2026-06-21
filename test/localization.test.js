@@ -55,6 +55,14 @@ test("current position copying uses localized summaries", () => {
   assert.match(mainSource, /getCurrentPositionSummary\(\)/);
 });
 
+test("resign labels are localized", () => {
+  assert.match(mainSource, /resign: "Resign"/);
+  assert.match(mainSource, /resign: "认输"/);
+  assert.match(mainSource, /resigned\(playerName, winnerName\)/);
+  assert.match(mainSource, /return `\$\{playerName\} resigned\. \$\{winnerName\} wins\.`/);
+  assert.match(mainSource, /return `\$\{playerName\}认输，\$\{winnerName\}获胜。`/);
+});
+
 test("advanced difficulty labels are localized", () => {
   assert.match(mainSource, /hard: "Hard"/);
   assert.match(mainSource, /extreme: "Extreme"/);

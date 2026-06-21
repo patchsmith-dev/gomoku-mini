@@ -1,4 +1,4 @@
-const { BOARD_SIZE, chooseComputerMove, createGame, placeStone, undoMove, resetGame, countStones } =
+const { BOARD_SIZE, chooseComputerMove, createGame, placeStone, undoMove, resetGame, resignGame, countStones } =
   window.GomokuEngine;
 
 const boardElement = document.querySelector("#board");
@@ -28,6 +28,7 @@ const timerToggle = document.querySelector("#timer-toggle");
 const elapsedTimeLabel = document.querySelector("#elapsed-time-label");
 const hintButton = document.querySelector("#hint-button");
 const copyPositionButton = document.querySelector("#copy-position-button");
+const resignButton = document.querySelector("#resign-button");
 const undoButton = document.querySelector("#undo-button");
 const resetButton = document.querySelector("#reset-button");
 const computerSideSelect = document.querySelector("#computer-side-select");
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
     variedOpening: "Varied",
     hint: "Hint",
     copyPosition: "Copy Position",
+    resign: "Resign",
     classicTheme: "Classic",
     forestTheme: "Forest",
     midnightTheme: "Midnight",
@@ -123,6 +125,9 @@ const TRANSLATIONS = {
     drawAfter(moves) {
       return `Draw after ${moves} moves.`;
     },
+    resigned(playerName, winnerName) {
+      return `${playerName} resigned. ${winnerName} wins.`;
+    },
     recentSummary(result, moves, timeText) {
       return `${result} after ${moves} moves${timeText}`;
     },
@@ -172,6 +177,7 @@ const TRANSLATIONS = {
     variedOpening: "多变化",
     hint: "提示",
     copyPosition: "复制局面",
+    resign: "认输",
     classicTheme: "经典",
     forestTheme: "林地",
     midnightTheme: "夜色",
@@ -227,6 +233,9 @@ const TRANSLATIONS = {
     },
     drawAfter(moves) {
       return `平局，共 ${moves} 手。`;
+    },
+    resigned(playerName, winnerName) {
+      return `${playerName}认输，${winnerName}获胜。`;
     },
     recentSummary(result, moves, timeText) {
       return `${result}，共 ${moves} 手${timeText}`;
@@ -322,6 +331,7 @@ function renderStatus() {
   whiteCount.textContent = String(stoneCounts.white);
   moveCount.textContent = String(game.moves.length);
   hintButton.disabled = Boolean(game.winner || game.isDraw || isComputerTurn());
+  resignButton.disabled = Boolean(game.winner || game.isDraw || isComputerTurn());
   undoButton.disabled = game.moves.length === 0;
 
   moveHistory.innerHTML = "";
@@ -428,6 +438,25 @@ function handleReset() {
   render();
   playComputerTurn();
   openingIndex += 1;
+}
+
+function handleResign() {
+  if (isComputerTurn()) {
+    return;
+  }
+
+  const resignedPlayer = game.currentPlayer;
+  const result = resignGame(game, resignedPlayer);
+
+  if (!result.ok) {
+    return;
+  }
+
+  hintPosition = null;
+  saveCompletedMatch();
+  stopTimerIfGameComplete();
+  render();
+  statusAnnouncer.textContent = getText("resigned")(getPlayerName(resignedPlayer), getPlayerName(result.winner));
 }
 
 function handleModeChange(event) {
@@ -962,6 +991,7 @@ moveHistory.addEventListener("click", (event) => {
 undoButton.addEventListener("click", handleUndo);
 resetButton.addEventListener("click", handleReset);
 copyPositionButton.addEventListener("click", copyCurrentPosition);
+resignButton.addEventListener("click", handleResign);
 copyRecentButton.addEventListener("click", copyRecentMatch);
 clearRecentButton.addEventListener("click", clearRecentMatch);
 contrastToggle.addEventListener("change", handleContrastChange);

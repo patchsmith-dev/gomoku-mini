@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.4.2 - 2026-06-22
+
+- Added a Resign action that ends the active game and awards the opponent a win
+
 ## 0.4.1 - 2026-06-20
 
 - Changed move history, hint announcements, and cell descriptions to use board coordinates such as H8
