@@ -6,6 +6,42 @@
 
 Gomoku Mini is a lightweight, zero-dependency Gomoku game that runs directly in the browser. It is designed as a beginner-friendly open source project: small enough to understand in one sitting, but complete enough to be useful for learning, demos, and community contributions.
 
+## 中文说明
+
+Gomoku Mini 是一个轻量级、零运行依赖的浏览器五子棋小游戏。项目使用原生 HTML、CSS 和 JavaScript 编写，不需要构建步骤，适合用来学习前端基础、棋类规则实现、无障碍交互和开源项目结构。
+
+主要功能：
+
+- 15 x 15 标准五子棋棋盘
+- 本地双人对战
+- 本地电脑对手模式
+- Easy、Normal、Hard、Extreme 四档电脑难度
+- 可选择电脑执黑或执白
+- Center / Varied 电脑开局风格
+- 中英文界面切换
+- Classic、Forest、Midnight 三种视觉主题
+- 棋盘坐标、当前选中坐标、最后一手标记
+- 走子记录可点击回看
+- 提示、悔棋、认输、重置、计时器
+- 复制当前局面和最近对局摘要
+- 键盘导航、屏幕阅读器播报、高对比度和减少动画支持
+
+在线试玩：
+
+```text
+https://patchsmith-dev.github.io/gomoku-mini/
+```
+
+本地运行：
+
+```bash
+python -m http.server 8000
+```
+
+然后打开 `http://localhost:8000`。
+
+基本玩法：黑方先手，双方轮流在空位落子。任意一方率先在横向、纵向或斜向连成五子或更多即获胜。棋盘外侧显示 A-O 和 1-15 坐标，走子记录和提示会使用 `H8` 这类坐标格式，方便复盘和分享。
+
 ## Features
 
 - 15 x 15 classic Gomoku board

@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Added a Chinese README section with project overview, feature summary, setup, and gameplay notes
+
 ## 0.4.2 - 2026-06-22
 
 - Added a Resign action that ends the active game and awards the opponent a win
