@@ -336,6 +336,30 @@ h1 {
     inset 0 0 0 1px rgba(31, 41, 51, 0.2);
 }
 
+.move-number {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  width: 74%;
+  height: 74%;
+  place-items: center;
+  border-radius: 50%;
+  font-size: clamp(0.55rem, 1.4vw, 0.92rem);
+  font-weight: 900;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.cell.black .move-number {
+  color: #ffffff;
+  text-shadow: 0 1px 2px #000000;
+}
+
+.cell.white .move-number {
+  color: #111827;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+}
+
 .cell.last-move::before {
   content: "";
   position: absolute;
@@ -395,6 +419,16 @@ body.high-contrast .cell.white::after {
   box-shadow:
     0 0 0 2px #000000,
     inset 0 0 0 1px #ffffff;
+}
+
+body.high-contrast .cell.black .move-number {
+  color: #ffffff;
+  text-shadow: none;
+}
+
+body.high-contrast .cell.white .move-number {
+  color: #000000;
+  text-shadow: none;
 }
 
 body.high-contrast .cell.last-move::before {
@@ -553,7 +587,8 @@ body.theme-midnight .opening-field select {
 }
 
 .contrast-toggle,
-.timer-toggle {
+.timer-toggle,
+.move-numbers-toggle {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -562,7 +597,8 @@ body.theme-midnight .opening-field select {
 }
 
 .contrast-toggle input,
-.timer-toggle input {
+.timer-toggle input,
+.move-numbers-toggle input {
   width: 20px;
   height: 20px;
   accent-color: var(--accent);

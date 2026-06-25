@@ -25,6 +25,7 @@ const copyRecentButton = document.querySelector("#copy-recent-button");
 const clearRecentButton = document.querySelector("#clear-recent-button");
 const contrastToggle = document.querySelector("#contrast-toggle");
 const timerToggle = document.querySelector("#timer-toggle");
+const moveNumbersToggle = document.querySelector("#move-numbers-toggle");
 const elapsedTimeLabel = document.querySelector("#elapsed-time-label");
 const hintButton = document.querySelector("#hint-button");
 const copyPositionButton = document.querySelector("#copy-position-button");
@@ -36,6 +37,7 @@ const MATCH_STORAGE_KEY = "gomoku-mini:recent-match";
 const CONTRAST_STORAGE_KEY = "gomoku-mini:high-contrast";
 const LANGUAGE_STORAGE_KEY = "gomoku-mini:language";
 const THEME_STORAGE_KEY = "gomoku-mini:theme";
+const MOVE_NUMBERS_STORAGE_KEY = "gomoku-mini:move-numbers";
 const DEFAULT_COMPUTER_PLAYER = "white";
 const DEFAULT_LANGUAGE = "en";
 const DEFAULT_THEME = "classic";
@@ -74,6 +76,7 @@ const TRANSLATIONS = {
     midnightTheme: "Midnight",
     highContrast: "High contrast",
     timer: "Timer",
+    moveNumbers: "Move numbers",
     turn: "Turn",
     result: "Result",
     time: "Time",
@@ -183,6 +186,7 @@ const TRANSLATIONS = {
     midnightTheme: "夜色",
     highContrast: "高对比度",
     timer: "计时器",
+    moveNumbers: "手数",
     turn: "回合",
     result: "结果",
     time: "时间",
@@ -273,6 +277,7 @@ let language = readLanguagePreference();
 let theme = readThemePreference();
 let highContrastEnabled = readHighContrastPreference();
 let timerEnabled = false;
+let moveNumbersEnabled = readMoveNumbersPreference();
 let timerStartedAt = null;
 let timerElapsedMs = 0;
 let timerIntervalId = null;
@@ -280,6 +285,7 @@ let timerIntervalId = null;
 function renderBoard() {
   boardElement.innerHTML = "";
   const lastMove = game.moves[game.moves.length - 1];
+  const moveNumbers = new Map(game.moves.map((move, index) => [`${move.row},${move.col}`, index + 1]));
 
   for (let row = 0; row < BOARD_SIZE; row += 1) {
     for (let col = 0; col < BOARD_SIZE; col += 1) {
@@ -302,6 +308,13 @@ function renderBoard() {
       cell.setAttribute("aria-disabled", String(Boolean(value || game.winner || game.isDraw)));
       if (isLastMove) {
         cell.setAttribute("aria-current", "step");
+      }
+      if (moveNumbersEnabled && value) {
+        const moveNumber = document.createElement("span");
+        moveNumber.className = "move-number";
+        moveNumber.textContent = String(moveNumbers.get(`${row},${col}`));
+        moveNumber.setAttribute("aria-hidden", "true");
+        cell.appendChild(moveNumber);
       }
       cell.tabIndex = isFocusedCell(row, col) ? 0 : -1;
       boardElement.appendChild(cell);
@@ -360,6 +373,7 @@ function render() {
   renderLanguage();
   renderThemePreference();
   renderContrastPreference();
+  renderMoveNumbersPreference();
   renderTimerStatus();
   renderComputerOptions();
   renderBoard();
@@ -794,6 +808,14 @@ function readHighContrastPreference() {
   }
 }
 
+function readMoveNumbersPreference() {
+  try {
+    return window.localStorage.getItem(MOVE_NUMBERS_STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
 function readLanguagePreference() {
   try {
     const storedLanguage = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
@@ -836,9 +858,21 @@ function writeHighContrastPreference(isEnabled) {
   }
 }
 
+function writeMoveNumbersPreference(isEnabled) {
+  try {
+    window.localStorage.setItem(MOVE_NUMBERS_STORAGE_KEY, String(isEnabled));
+  } catch {
+    // Some privacy modes disable localStorage. Move-number display should still work.
+  }
+}
+
 function renderContrastPreference() {
   document.body.classList.toggle("high-contrast", highContrastEnabled);
   contrastToggle.checked = highContrastEnabled;
+}
+
+function renderMoveNumbersPreference() {
+  moveNumbersToggle.checked = moveNumbersEnabled;
 }
 
 function renderThemePreference() {
@@ -851,6 +885,12 @@ function handleContrastChange() {
   highContrastEnabled = contrastToggle.checked;
   writeHighContrastPreference(highContrastEnabled);
   renderContrastPreference();
+}
+
+function handleMoveNumbersChange() {
+  moveNumbersEnabled = moveNumbersToggle.checked;
+  writeMoveNumbersPreference(moveNumbersEnabled);
+  render();
 }
 
 function getElapsedTimeMs() {
@@ -995,6 +1035,7 @@ resignButton.addEventListener("click", handleResign);
 copyRecentButton.addEventListener("click", copyRecentMatch);
 clearRecentButton.addEventListener("click", clearRecentMatch);
 contrastToggle.addEventListener("change", handleContrastChange);
+moveNumbersToggle.addEventListener("change", handleMoveNumbersChange);
 timerToggle.addEventListener("change", handleTimerChange);
 languageSelect.addEventListener("change", handleLanguageChange);
 themeSelect.addEventListener("change", handleThemeChange);

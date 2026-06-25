@@ -49,6 +49,15 @@ test("resign action is available and announced", () => {
   assert.match(mainSource, /resignButton\.addEventListener\("click", handleResign\)/);
 });
 
+test("optional move numbers are hidden from assistive tech", () => {
+  assert.match(htmlSource, /id="move-numbers-toggle"/);
+  assert.match(htmlSource, /data-i18n="moveNumbers"/);
+  assert.match(mainSource, /moveNumber\.className = "move-number"/);
+  assert.match(mainSource, /moveNumber\.setAttribute\("aria-hidden", "true"\)/);
+  assert.match(mainSource, /moveNumbersToggle\.addEventListener\("change", handleMoveNumbersChange\)/);
+  assert.match(styleSource, /\.move-number\s*{/);
+});
+
 test("theme selector is labeled and high contrast keeps priority", () => {
   assert.match(htmlSource, /id="theme-select"/);
   assert.match(htmlSource, /data-i18n-aria="theme"/);

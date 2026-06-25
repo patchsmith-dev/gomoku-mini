@@ -2,8 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 0.4.3 - 2026-06-26
 
+- Added an optional move-number display for stones to make review and shared screenshots easier
 - Added a Chinese README section with project overview, feature summary, setup, and gameplay notes
 
 ## 0.4.2 - 2026-06-22

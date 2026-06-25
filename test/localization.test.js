@@ -63,6 +63,11 @@ test("resign labels are localized", () => {
   assert.match(mainSource, /return `\$\{playerName\}认输，\$\{winnerName\}获胜。`/);
 });
 
+test("move number labels are localized", () => {
+  assert.match(mainSource, /moveNumbers: "Move numbers"/);
+  assert.match(mainSource, /moveNumbers: "手数"/);
+});
+
 test("advanced difficulty labels are localized", () => {
   assert.match(mainSource, /hard: "Hard"/);
   assert.match(mainSource, /extreme: "Extreme"/);
