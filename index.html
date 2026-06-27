@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gomoku Mini</title>
-    <link rel="stylesheet" href="src/styles.css?v=0.4.3" />
+    <link rel="stylesheet" href="src/styles.css?v=0.4.4" />
   </head>
   <body>
     <main class="app-shell">
@@ -163,8 +163,11 @@
             </div>
             <div class="history-box">
               <div class="history-head">
-                <span class="label" data-i18n="moves">Moves</span>
-                <strong id="move-count">0</strong>
+                <div>
+                  <span class="label" data-i18n="moves">Moves</span>
+                  <strong id="move-count">0</strong>
+                </div>
+                <button id="copy-moves-button" type="button" data-i18n="copyMoves">Copy Moves</button>
               </div>
               <ol id="move-history" aria-label="Move history" data-i18n-aria="moveHistory"></ol>
             </div>
@@ -184,7 +187,7 @@
       </section>
     </main>
 
-    <script src="src/engine.js?v=0.4.3"></script>
-    <script src="src/main.js?v=0.4.3"></script>
+    <script src="src/engine.js?v=0.4.4"></script>
+    <script src="src/main.js?v=0.4.4"></script>
   </body>
 </html>

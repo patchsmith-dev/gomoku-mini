@@ -36,8 +36,24 @@ test("current position copy action is available", () => {
   assert.match(htmlSource, /id="copy-position-button"/);
   assert.match(htmlSource, /data-i18n="copyPosition"/);
   assert.match(mainSource, /async function copyCurrentPosition\(\)/);
-  assert.match(mainSource, /navigator\.clipboard\.writeText\(getCurrentPositionSummary\(\)\)/);
+  assert.match(mainSource, /copyTextToClipboard\(getCurrentPositionSummary\(\)\)/);
   assert.match(mainSource, /copyPositionButton\.addEventListener\("click", copyCurrentPosition\)/);
+});
+
+test("move list copy action is available in the history panel", () => {
+  assert.match(htmlSource, /id="copy-moves-button"/);
+  assert.match(htmlSource, /data-i18n="copyMoves"/);
+  assert.match(mainSource, /copyMovesButton\.disabled = game\.moves\.length === 0/);
+  assert.match(mainSource, /async function copyMoveList\(\)/);
+  assert.match(mainSource, /copyTextToClipboard\(getMoveListText\(\)\)/);
+  assert.match(mainSource, /copyMovesButton\.addEventListener\("click", copyMoveList\)/);
+});
+
+test("copy actions fall back when the Clipboard API is unavailable", () => {
+  assert.match(mainSource, /async function copyTextToClipboard\(text\)/);
+  assert.match(mainSource, /navigator\.clipboard\?\.writeText/);
+  assert.match(mainSource, /document\.createElement\("textarea"\)/);
+  assert.match(mainSource, /document\.execCommand\("copy"\)/);
 });
 
 test("resign action is available and announced", () => {

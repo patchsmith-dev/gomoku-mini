@@ -28,6 +28,7 @@ This keeps the core rules testable without adding a bundler.
 - Handles move-history refocusing back to board cells
 - Handles selected-coordinate feedback for touch and keyboard navigation
 - Handles optional move-number display for review mode
+- Handles move-list copy summaries for review and sharing
 - Handles current-position copy summaries
 - Handles resign actions and completed-match saving
 - Handles local interface preferences such as language, contrast, and visual theme

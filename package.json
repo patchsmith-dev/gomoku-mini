@@ -1,6 +1,6 @@
 {
   "name": "gomoku-mini",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "A lightweight zero-dependency browser Gomoku game.",
   "private": false,
   "license": "MIT",

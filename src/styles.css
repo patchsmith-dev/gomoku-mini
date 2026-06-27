@@ -648,8 +648,21 @@ body.theme-midnight .opening-field select {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   padding: 14px 16px;
   border-bottom: 1px solid rgba(31, 41, 51, 0.1);
+}
+
+.history-head > div {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.history-head button {
+  min-height: 34px;
+  padding: 0 12px;
+  white-space: nowrap;
 }
 
 #move-history {

@@ -16,6 +16,7 @@ const whiteScoreName = document.querySelector("#white-score-name");
 const blackCount = document.querySelector("#black-count");
 const whiteCount = document.querySelector("#white-count");
 const moveCount = document.querySelector("#move-count");
+const copyMovesButton = document.querySelector("#copy-moves-button");
 const moveHistory = document.querySelector("#move-history");
 const selectedCellLabel = document.querySelector("#selected-cell-label");
 const statusAnnouncer = document.querySelector("#status-announcer");
@@ -85,7 +86,9 @@ const TRANSLATIONS = {
     recentMatch: "Recent Match",
     moveHistory: "Move history",
     noCompletedMatch: "No completed match yet",
+    noMovesYet: "No moves yet",
     copy: "Copy",
+    copyMoves: "Copy Moves",
     clear: "Clear",
     undo: "Undo",
     reset: "Reset",
@@ -142,6 +145,8 @@ const TRANSLATIONS = {
     copyRecentMatchFailed: "Could not copy the recent match.",
     copiedPosition: "Current position copied.",
     copyPositionFailed: "Could not copy the current position.",
+    copiedMoves: "Move list copied.",
+    copyMovesFailed: "Could not copy the move list.",
     positionSummary({ result, turn, selected, moves }) {
       return `Gomoku Mini\nResult: ${result}\nTurn: ${turn}\nSelected: ${selected}\nMoves: ${moves}`;
     },
@@ -195,7 +200,9 @@ const TRANSLATIONS = {
     recentMatch: "最近对局",
     moveHistory: "走子记录",
     noCompletedMatch: "暂无已完成对局",
+    noMovesYet: "暂无走子",
     copy: "复制",
+    copyMoves: "复制走子",
     clear: "清除",
     undo: "悔棋",
     reset: "重置",
@@ -252,6 +259,8 @@ const TRANSLATIONS = {
     copyRecentMatchFailed: "无法复制最近对局。",
     copiedPosition: "已复制当前局面。",
     copyPositionFailed: "无法复制当前局面。",
+    copiedMoves: "已复制走子记录。",
+    copyMovesFailed: "无法复制走子记录。",
     positionSummary({ result, turn, selected, moves }) {
       return `Gomoku Mini\n结果：${result}\n回合：${turn}\n已选：${selected}\n走子：${moves}`;
     },
@@ -343,6 +352,7 @@ function renderStatus() {
   blackCount.textContent = String(stoneCounts.black);
   whiteCount.textContent = String(stoneCounts.white);
   moveCount.textContent = String(game.moves.length);
+  copyMovesButton.disabled = game.moves.length === 0;
   hintButton.disabled = Boolean(game.winner || game.isDraw || isComputerTurn());
   resignButton.disabled = Boolean(game.winner || game.isDraw || isComputerTurn());
   undoButton.disabled = game.moves.length === 0;
@@ -759,14 +769,19 @@ function formatCompletedAt(completedAt) {
 async function copyRecentMatch() {
   const match = readRecentMatch();
 
-  if (!match || !navigator.clipboard?.writeText) {
+  if (!match) {
     statusAnnouncer.textContent = getText("copyRecentMatchFailed");
     return;
   }
 
   try {
     const summaryParts = [getRecentMatchSummary(match), formatCompletedAt(match.completedAt)].filter(Boolean);
-    await navigator.clipboard.writeText(summaryParts.join(" - "));
+    const wasCopied = await copyTextToClipboard(summaryParts.join(" - "));
+
+    if (!wasCopied) {
+      throw new Error("Clipboard unavailable");
+    }
+
     statusAnnouncer.textContent = getText("copiedRecentMatch");
   } catch {
     statusAnnouncer.textContent = getText("copyRecentMatchFailed");
@@ -774,29 +789,84 @@ async function copyRecentMatch() {
 }
 
 async function copyCurrentPosition() {
-  if (!navigator.clipboard?.writeText) {
-    statusAnnouncer.textContent = getText("copyPositionFailed");
-    return;
-  }
-
   try {
-    await navigator.clipboard.writeText(getCurrentPositionSummary());
+    const wasCopied = await copyTextToClipboard(getCurrentPositionSummary());
+
+    if (!wasCopied) {
+      throw new Error("Clipboard unavailable");
+    }
+
     statusAnnouncer.textContent = getText("copiedPosition");
   } catch {
     statusAnnouncer.textContent = getText("copyPositionFailed");
   }
 }
 
-function getCurrentPositionSummary() {
-  const moveText = game.moves
+async function copyMoveList() {
+  if (game.moves.length === 0) {
+    statusAnnouncer.textContent = getText("copyMovesFailed");
+    return;
+  }
+
+  try {
+    const wasCopied = await copyTextToClipboard(getMoveListText());
+
+    if (!wasCopied) {
+      throw new Error("Clipboard unavailable");
+    }
+
+    statusAnnouncer.textContent = getText("copiedMoves");
+  } catch {
+    statusAnnouncer.textContent = getText("copyMovesFailed");
+  }
+}
+
+async function copyTextToClipboard(text) {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // Fall back to a temporary text field below.
+    }
+  }
+
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.setAttribute("readonly", "");
+  textArea.style.position = "fixed";
+  textArea.style.top = "-1000px";
+  textArea.style.opacity = "0";
+  document.body.appendChild(textArea);
+  textArea.select();
+
+  try {
+    return document.execCommand("copy");
+  } catch {
+    return false;
+  } finally {
+    textArea.remove();
+  }
+}
+
+function getMoveListText() {
+  if (game.moves.length === 0) {
+    return getText("noMovesYet");
+  }
+
+  return game.moves
     .map((move, index) => `${index + 1}. ${getText("moveEntry")(getPlayerName(move.player), getBoardCoordinate(move.row, move.col))}`)
-    .join(" ");
+    .join("\n");
+}
+
+function getCurrentPositionSummary() {
+  const moveText = getMoveListText().replace(/\n/g, " ");
 
   return getText("positionSummary")({
     result: getResultLabel(),
     turn: getPlayerName(game.currentPlayer),
     selected: getBoardCoordinate(focusPosition.row, focusPosition.col),
-    moves: moveText || getText("noCompletedMatch"),
+    moves: game.moves.length > 0 ? moveText : getText("noMovesYet"),
   });
 }
 
@@ -1031,6 +1101,7 @@ moveHistory.addEventListener("click", (event) => {
 undoButton.addEventListener("click", handleUndo);
 resetButton.addEventListener("click", handleReset);
 copyPositionButton.addEventListener("click", copyCurrentPosition);
+copyMovesButton.addEventListener("click", copyMoveList);
 resignButton.addEventListener("click", handleResign);
 copyRecentButton.addEventListener("click", copyRecentMatch);
 clearRecentButton.addEventListener("click", clearRecentMatch);

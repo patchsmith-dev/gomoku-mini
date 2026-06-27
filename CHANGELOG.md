@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.4 - 2026-06-28
+
+- Added a Copy Moves action for exporting the current move list with board coordinates
+- Added a fallback clipboard path so copy actions still work when the Clipboard API is unavailable
+- Updated move-copy localization, source tests, README, and architecture notes
+
 ## 0.4.3 - 2026-06-26
 
 - Added an optional move-number display for stones to make review and shared screenshots easier

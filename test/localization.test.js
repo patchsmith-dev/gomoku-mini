@@ -55,6 +55,15 @@ test("current position copying uses localized summaries", () => {
   assert.match(mainSource, /getCurrentPositionSummary\(\)/);
 });
 
+test("move list copying uses localized labels", () => {
+  assert.match(mainSource, /copyMoves: "Copy Moves"/);
+  assert.match(mainSource, /copyMoves: "复制走子"/);
+  assert.match(mainSource, /copiedMoves: "Move list copied\."/);
+  assert.match(mainSource, /copyMovesFailed: "Could not copy the move list\."/);
+  assert.match(mainSource, /noMovesYet: "No moves yet"/);
+  assert.match(mainSource, /getMoveListText\(\)/);
+});
+
 test("resign labels are localized", () => {
   assert.match(mainSource, /resign: "Resign"/);
   assert.match(mainSource, /resign: "认输"/);
