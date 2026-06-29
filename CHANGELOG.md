@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.5 - 2026-06-29
+
+- Added a Copy Board action that exports the current board as a coordinate text diagram
+- Hardened the fallback clipboard text field used by copy actions
+- Updated board-copy localization, source tests, README, and architecture notes
+
 ## 0.4.4 - 2026-06-28
 
 - Added a Copy Moves action for exporting the current move list with board coordinates

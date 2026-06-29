@@ -40,6 +40,15 @@ test("current position copy action is available", () => {
   assert.match(mainSource, /copyPositionButton\.addEventListener\("click", copyCurrentPosition\)/);
 });
 
+test("board diagram copy action is available", () => {
+  assert.match(htmlSource, /id="copy-board-button"/);
+  assert.match(htmlSource, /data-i18n="copyBoard"/);
+  assert.match(mainSource, /async function copyBoardDiagram\(\)/);
+  assert.match(mainSource, /copyTextToClipboard\(getBoardDiagramText\(\)\)/);
+  assert.match(mainSource, /function getBoardDiagramStone\(value\)/);
+  assert.match(mainSource, /copyBoardButton\.addEventListener\("click", copyBoardDiagram\)/);
+});
+
 test("move list copy action is available in the history panel", () => {
   assert.match(htmlSource, /id="copy-moves-button"/);
   assert.match(htmlSource, /data-i18n="copyMoves"/);
@@ -53,6 +62,8 @@ test("copy actions fall back when the Clipboard API is unavailable", () => {
   assert.match(mainSource, /async function copyTextToClipboard\(text\)/);
   assert.match(mainSource, /navigator\.clipboard\?\.writeText/);
   assert.match(mainSource, /document\.createElement\("textarea"\)/);
+  assert.match(mainSource, /textArea\.focus\(\)/);
+  assert.match(mainSource, /textArea\.setSelectionRange\(0, text\.length\)/);
   assert.match(mainSource, /document\.execCommand\("copy"\)/);
 });
 

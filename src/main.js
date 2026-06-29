@@ -30,6 +30,7 @@ const moveNumbersToggle = document.querySelector("#move-numbers-toggle");
 const elapsedTimeLabel = document.querySelector("#elapsed-time-label");
 const hintButton = document.querySelector("#hint-button");
 const copyPositionButton = document.querySelector("#copy-position-button");
+const copyBoardButton = document.querySelector("#copy-board-button");
 const resignButton = document.querySelector("#resign-button");
 const undoButton = document.querySelector("#undo-button");
 const resetButton = document.querySelector("#reset-button");
@@ -71,6 +72,7 @@ const TRANSLATIONS = {
     variedOpening: "Varied",
     hint: "Hint",
     copyPosition: "Copy Position",
+    copyBoard: "Copy Board",
     resign: "Resign",
     classicTheme: "Classic",
     forestTheme: "Forest",
@@ -145,6 +147,8 @@ const TRANSLATIONS = {
     copyRecentMatchFailed: "Could not copy the recent match.",
     copiedPosition: "Current position copied.",
     copyPositionFailed: "Could not copy the current position.",
+    copiedBoard: "Board copied.",
+    copyBoardFailed: "Could not copy the board.",
     copiedMoves: "Move list copied.",
     copyMovesFailed: "Could not copy the move list.",
     positionSummary({ result, turn, selected, moves }) {
@@ -185,6 +189,7 @@ const TRANSLATIONS = {
     variedOpening: "多变化",
     hint: "提示",
     copyPosition: "复制局面",
+    copyBoard: "复制棋盘",
     resign: "认输",
     classicTheme: "经典",
     forestTheme: "林地",
@@ -259,6 +264,8 @@ const TRANSLATIONS = {
     copyRecentMatchFailed: "无法复制最近对局。",
     copiedPosition: "已复制当前局面。",
     copyPositionFailed: "无法复制当前局面。",
+    copiedBoard: "已复制棋盘。",
+    copyBoardFailed: "无法复制棋盘。",
     copiedMoves: "已复制走子记录。",
     copyMovesFailed: "无法复制走子记录。",
     positionSummary({ result, turn, selected, moves }) {
@@ -802,6 +809,20 @@ async function copyCurrentPosition() {
   }
 }
 
+async function copyBoardDiagram() {
+  try {
+    const wasCopied = await copyTextToClipboard(getBoardDiagramText());
+
+    if (!wasCopied) {
+      throw new Error("Clipboard unavailable");
+    }
+
+    statusAnnouncer.textContent = getText("copiedBoard");
+  } catch {
+    statusAnnouncer.textContent = getText("copyBoardFailed");
+  }
+}
+
 async function copyMoveList() {
   if (game.moves.length === 0) {
     statusAnnouncer.textContent = getText("copyMovesFailed");
@@ -822,31 +843,41 @@ async function copyMoveList() {
 }
 
 async function copyTextToClipboard(text) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.setAttribute("readonly", "");
+  textArea.style.position = "fixed";
+  textArea.style.top = "0";
+  textArea.style.left = "0";
+  textArea.style.width = "1px";
+  textArea.style.height = "1px";
+  textArea.style.opacity = "0.01";
+  textArea.style.zIndex = "-1";
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  textArea.setSelectionRange(0, text.length);
+
+  try {
+    if (document.execCommand("copy")) {
+      return true;
+    }
+  } catch {
+    // Fall through to the async Clipboard API below.
+  } finally {
+    textArea.remove();
+  }
+
   if (navigator.clipboard?.writeText) {
     try {
       await navigator.clipboard.writeText(text);
       return true;
     } catch {
-      // Fall back to a temporary text field below.
+      return false;
     }
   }
 
-  const textArea = document.createElement("textarea");
-  textArea.value = text;
-  textArea.setAttribute("readonly", "");
-  textArea.style.position = "fixed";
-  textArea.style.top = "-1000px";
-  textArea.style.opacity = "0";
-  document.body.appendChild(textArea);
-  textArea.select();
-
-  try {
-    return document.execCommand("copy");
-  } catch {
-    return false;
-  } finally {
-    textArea.remove();
-  }
+  return false;
 }
 
 function getMoveListText() {
@@ -857,6 +888,37 @@ function getMoveListText() {
   return game.moves
     .map((move, index) => `${index + 1}. ${getText("moveEntry")(getPlayerName(move.player), getBoardCoordinate(move.row, move.col))}`)
     .join("\n");
+}
+
+function getBoardDiagramText() {
+  const header = `   ${COLUMN_LABELS.join(" ")}`;
+  const rows = game.board.map((row, rowIndex) => {
+    const rowLabel = String(rowIndex + 1).padStart(2, " ");
+    const cells = row.map(getBoardDiagramStone).join(" ");
+
+    return `${rowLabel} ${cells}`;
+  });
+
+  return [
+    "Gomoku Mini",
+    `${getText("result")}: ${getResultLabel()}`,
+    `${getText("turn")}: ${getPlayerName(game.currentPlayer)}`,
+    `${getText("moves")}: ${game.moves.length}`,
+    header,
+    ...rows,
+  ].join("\n");
+}
+
+function getBoardDiagramStone(value) {
+  if (value === "black") {
+    return "X";
+  }
+
+  if (value === "white") {
+    return "O";
+  }
+
+  return ".";
 }
 
 function getCurrentPositionSummary() {
@@ -1101,6 +1163,7 @@ moveHistory.addEventListener("click", (event) => {
 undoButton.addEventListener("click", handleUndo);
 resetButton.addEventListener("click", handleReset);
 copyPositionButton.addEventListener("click", copyCurrentPosition);
+copyBoardButton.addEventListener("click", copyBoardDiagram);
 copyMovesButton.addEventListener("click", copyMoveList);
 resignButton.addEventListener("click", handleResign);
 copyRecentButton.addEventListener("click", copyRecentMatch);
